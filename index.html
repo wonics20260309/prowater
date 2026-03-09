@@ -446,6 +446,14 @@
                 </div>
             </div>
 
+            <!-- 섭취 히스토리 추가 -->
+            <div id="intakeHistoryContainer" style="margin-top: 30px; display: none; text-align: left;">
+                <h4 style="margin-bottom: 10px; color: var(--primary-color);">🕒 오늘의 섭취 히스토리</h4>
+                <ul id="intakeHistoryList" style="list-style: none; padding: 0; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.03); border-radius: 8px; padding: 15px; border: 1px solid #eee;">
+                    <!-- JS에서 히스토리 삽입 -->
+                </ul>
+            </div>
+
             <div class="formula-card">
                 <h4>🧪 공신력 있는 수분 계산법</h4>
                 <p>본 계산기는 **세계보건기구(WHO)**와 **미국 국립의학연구소(IOM)**의 권장 지침을 기반으로 설계되었습니다.</p>
@@ -591,6 +599,9 @@
 
     // 수분 계산기 로직
     let drank = 0;
+    let intakeHistory = [];
+    let goalReached = false;
+
     function calculateIntake() {
         const w = document.getElementById('weight').value || 0;
         let base = w * 0.03;
@@ -606,16 +617,49 @@
         if (waterLevel) {
             waterLevel.style.height = (isNaN(percent) ? 0 : percent) + "%";
         }
+
+        // 목표 달성 알림
+        if (percent >= 100 && !goalReached && target > 0) {
+            goalReached = true;
+            setTimeout(() => {
+                alert("🎉 축하합니다! 오늘의 수분 섭취 목표를 달성하셨습니다! 건강한 습관을 계속 유지해 보세요.");
+            }, 500);
+        }
     }
 
     function addWater(a) { 
-        drank += a; 
+        drank += a;
+        
+        // 히스토리 추가
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        intakeHistory.unshift({ time: timeStr, amount: (a * 1000).toFixed(0) });
+        updateHistoryUI();
+        
         calculateIntake(); 
     }
 
+    function updateHistoryUI() {
+        const container = document.getElementById('intakeHistoryContainer');
+        const list = document.getElementById('intakeHistoryList');
+        
+        if (intakeHistory.length > 0) {
+            container.style.display = 'block';
+            list.innerHTML = intakeHistory.map(item => `
+                <li style="border-bottom: 1px solid rgba(0,0,0,0.05); padding: 8px 0; font-size: 0.9rem; display: flex; justify-content: space-between;">
+                    <span style="color: #888;">[${item.time}]</span>
+                    <span style="font-weight: bold; color: var(--primary-color);">💧 ${item.amount}ml 섭취</span>
+                </li>
+            `).join('');
+        }
+    }
+
     function resetWater() {
-        if(confirm("오늘의 섭취 기록을 초기화할까요?")) {
+        if(confirm("오늘의 섭취 기록과 히스토리를 모두 초기화할까요?")) {
             drank = 0;
+            intakeHistory = [];
+            goalReached = false;
+            document.getElementById('intakeHistoryContainer').style.display = 'none';
             calculateIntake();
         }
     }
