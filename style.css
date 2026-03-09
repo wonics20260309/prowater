@@ -1,1 +1,112 @@
-/* Add styles here */
+:root {
+    --bg-color: #eef6ff;
+    --header-bg: #3a9cff;
+    --header-text: white;
+    --card-bg: white;
+    --card-text: #333;
+    --price-color: #3a9cff;
+    --button-bg: #3a9cff;
+    --button-hover: #2a7dd3;
+    --footer-bg: #dcecff;
+    --footer-text: #555;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --header-bg: #1f1f1f;
+    --header-text: #e0e0e0;
+    --card-bg: #1e1e1e;
+    --card-text: #e0e0e0;
+    --price-color: #bb86fc;
+    --button-bg: #bb86fc;
+    --button-hover: #9965f4;
+    --footer-bg: #1a1a1a;
+    --footer-text: #aaa;
+    --shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--card-text);
+    margin: 0;
+    transition: background 0.3s, color 0.3s;
+}
+
+header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    text-align: center;
+    padding: 40px;
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 40px;
+}
+
+.product {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.price {
+    font-size: 24px;
+    color: var(--price-color);
+    margin: 15px 0;
+}
+
+button {
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: var(--button-hover);
+}
+
+.store-list {
+    display: none;
+    margin-top: 30px;
+}
+
+.store {
+    background: var(--card-bg);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.store a {
+    text-decoration: none;
+    color: var(--price-color);
+    font-weight: bold;
+}
+
+footer {
+    margin-top: 50px;
+    text-align: center;
+    padding: 20px;
+    background: var(--footer-bg);
+    color: var(--footer-text);
+}

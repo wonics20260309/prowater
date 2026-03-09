@@ -1,153 +1,47 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>생수 구매</title>
-
-<style>
-
-body{
-    font-family: Arial;
-    background:#eef6ff;
-    margin:0;
-}
-
-header{
-    background:#3a9cff;
-    color:white;
-    text-align:center;
-    padding:40px;
-}
-
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:40px;
-}
-
-.product{
-    background:white;
-    border-radius:10px;
-    padding:25px;
-    text-align:center;
-    box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
-
-.price{
-    font-size:24px;
-    color:#3a9cff;
-    margin:15px 0;
-}
-
-button{
-    background:#3a9cff;
-    color:white;
-    border:none;
-    padding:15px 25px;
-    font-size:16px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#2a7dd3;
-}
-
-.store-list{
-    display:none;
-    margin-top:30px;
-}
-
-.store{
-    background:white;
-    padding:15px;
-    margin:10px 0;
-    border-radius:8px;
-    box-shadow:0 3px 8px rgba(0,0,0,0.1);
-}
-
-.store a{
-    text-decoration:none;
-    color:#3a9cff;
-    font-weight:bold;
-}
-
-footer{
-    margin-top:50px;
-    text-align:center;
-    padding:20px;
-    background:#dcecff;
-}
-
-</style>
-
-<script>
-
-function buyWater(){
-
-    let confirmBuy = confirm("생수 2L를 구매하시겠습니까?");
-
-    if(confirmBuy){
-        document.getElementById("storeList").style.display = "block";
-    }
-
-}
-
-</script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>생수 구매 - 다크모드 지원</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <header>
-<h1>생수 스토어</h1>
-<p>깨끗한 물을 집까지 배송합니다</p>
+    <div class="theme-toggle">
+        <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
+    </div>
+    <h1>생수 스토어</h1>
+    <p>깨끗한 물을 집까지 배송합니다</p>
 </header>
 
 <div class="container">
+    <div class="product">
+        <h2>생수 2L</h2>
+        <p>신선하고 깨끗한 생수</p>
+        <div class="price">3,000원</div>
+        <button onclick="buyWater()">구매하기</button>
 
-<div class="product">
-
-<h2>생수 2L</h2>
-<p>신선하고 깨끗한 생수</p>
-
-<div class="price">3,000원</div>
-
-<button onclick="buyWater()">구매하기</button>
-
-<div class="store-list" id="storeList">
-
-<h3>구매 가능한 사이트</h3>
-
-<div class="store">
-<a href="https://www.coupang.com" target="_blank">
-쿠팡에서 구매하기
-</a>
-</div>
-
-<div class="store">
-<a href="https://www.11st.co.kr" target="_blank">
-11번가에서 구매하기
-</a>
-</div>
-
-<div class="store">
-<a href="https://www.gmarket.co.kr" target="_blank">
-G마켓에서 구매하기
-</a>
-</div>
-
-</div>
-
-</div>
-
+        <div class="store-list" id="storeList">
+            <h3>구매 가능한 사이트</h3>
+            <div class="store">
+                <a href="https://www.coupang.com" target="_blank">쿠팡에서 구매하기</a>
+            </div>
+            <div class="store">
+                <a href="https://www.11st.co.kr" target="_blank">11번가에서 구매하기</a>
+            </div>
+            <div class="store">
+                <a href="https://www.gmarket.co.kr" target="_blank">G마켓에서 구매하기</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <footer>
-<p>© 2026 Water Store</p>
+    <p>© 2026 Water Store</p>
 </footer>
 
+<script src="main.js"></script>
 </body>
 </html>
