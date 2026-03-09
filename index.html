@@ -3,134 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생수 브랜드 AI 판별기 - 파일 업로드</title>
-    <meta name="description" content="AI를 활용하여 삼다수, 몽베스트 등 다양한 생수 브랜드를 판별하고, 생수별 특징과 정보를 제공하는 서비스입니다.">
+    <title>Water Utility Tools - 스마트 물 정보 플랫폼</title>
+    <meta name="description" content="AI 생수 판별, 물 섭취량 계산기, 가격 비교 및 생수 데이터베이스를 제공하는 종합 물 정보 도구입니다.">
+    
+    <!-- 구글 애드센스 -->
     <meta name="google-adsense-account" content="ca-pub-9684896572010314">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9684896572010314"
-     crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="style.css">
-    <!-- TensorFlow.js 및 Teachable Machine 라이브러리 로드 -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9684896572010314" crossorigin="anonymous"></script>
+
+    <!-- TensorFlow.js 및 Teachable Machine (AI 기능을 위해 로드) -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --shadow: 0 10px 20px rgba(0,0,0,0.05);
+            --border-radius: 12px;
+            --accent-color: #e74c3c;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #ecf0f1;
+            --shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        nav {
+            background: var(--card-bg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 15px 0;
+            margin: 0;
+            overflow-x: auto;
+        }
+
+        .nav-links li a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 80px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--primary-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .ai-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .price-table th, .price-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .buy-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .progress-container {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        #progressBar {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .db-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--card-bg);
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .rank-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 25px;
+            width: 40px;
+        }
+
+        .btn-main {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            margin-top: 60px;
+        }
+    </style>
 </head>
 <body>
 
 <header>
     <div class="theme-toggle">
-        <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
+        <button onclick="toggleTheme()" id="themeBtn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:20px; cursor:pointer;">🌙 다크 모드</button>
     </div>
-    <h1>물 브랜드 판별 AI</h1>
-    <p>이미지 파일을 업로드하여 브랜드를 분석하고 정보를 알아보세요</p>
+    <h1>Water Utility Tools</h1>
+    <p>AI 기술과 데이터를 결합한 종합 물 정보 플랫폼</p>
 </header>
 
-<nav class="main-nav">
+<nav>
     <ul class="nav-links">
-        <li><a href="#ai-tool">AI 판별기</a></li>
-        <li><a href="#about-service">서비스 소개</a></li>
-        <li><a href="#water-info">생수 브랜드 정보</a></li>
-        <li><a href="#contact">제휴 문의</a></li>
+        <li><a href="#ai-tool">AI 판별</a></li>
+        <li><a href="#price-compare">가격 비교</a></li>
+        <li><a href="#intake-calc">수분 계산기</a></li>
+        <li><a href="#brand-db">브랜드 DB</a></li>
+        <li><a href="#ranking">랭킹 TOP 10</a></li>
     </ul>
 </nav>
 
 <div class="container">
-    
-    <div class="content-section" id="about-service">
-        <h2>물 브랜드 판별 AI 서비스란?</h2>
-        <p>현대인들은 건강을 위해 다양한 생수를 소비합니다. 하지만 시중에 판매되는 수많은 생수 브랜드 중에서 자신이 마시는 물이 어떤 브랜드인지, 어떤 특징을 가지고 있는지 헷갈릴 때가 많습니다.</p>
-        <p>저희 <strong>생수 브랜드 AI 판별기</strong>는 최신 딥러닝 기술인 TensorFlow.js와 Google의 Teachable Machine을 활용하여, 사용자가 업로드한 생수병 사진만으로 어떤 브랜드의 제품인지 정확하게 분석해 줍니다. 복잡한 검색 없이 빠르고 간편하게 생수 정보를 확인해 보세요.</p>
-    </div>
 
-    <div class="product" id="ai-tool">
-        <h2>AI 브랜드 분석 (이미지 업로드)</h2>
-        <p>삼다수 또는 몽베스트 생수 사진을 업로드해주시면 AI가 실시간으로 분석합니다.</p>
-        
-        <!-- 이미지 업로드 및 미리보기 영역 -->
-        <div class="upload-section" style="margin: 20px 0;">
-            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button type="button" onclick="document.getElementById('imageInput').click()">사진 선택하기</button>
-        </div>
-        
-        <div id="image-preview-container">
-            <img id="imagePreview" src="#" alt="이미지 미리보기" style="display: none; max-width: 100%; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow);">
-        </div>
-
-        <div id="label-container" style="margin-top: 15px;"></div>
-    </div>
-
-    <div class="content-section" id="water-info">
-        <h2>주요 생수 브랜드 정보 및 특징</h2>
-        
-        <div class="brand-info">
-            <h3>제주 삼다수 (Jeju Samdasoo)</h3>
-            <p><strong>수원지:</strong> 제주특별자치도 제주시 조천읍 교래리</p>
-            <p><strong>특징:</strong> 대한민국 1위 생수 브랜드로, 한라산 국립공원 내 해발 1,450m 높이에 스며든 빗물이 화산 암반층을 거쳐 천연 여과된 화산 암반수입니다. 칼슘과 칼륨, 마그네슘 등 미네랄이 풍부하며, 특히 바나듐과 실리카 성분이 함유되어 있어 물맛이 부드럽고 깔끔한 것이 특징입니다.</p>
-        </div>
-
-        <div class="brand-info">
-            <h3>몽베스트 (Mongbest)</h3>
-            <p><strong>수원지:</strong> 경기도 포천시 이동면</p>
-            <p><strong>특징:</strong> 몽베스트는 내추럴 미네랄 워터로, 화강암반층이 천연 필터 역할을 하여 깨끗하게 정화된 1급수입니다. 프리미엄 보라색 패키지 디자인으로 유명하며, 현대인의 라이프스타일에 맞춘 다양한 용량(330ml, 500ml, 1L, 2L) 라인업을 제공하여 휴대성과 실용성을 높인 것이 장점입니다.</p>
-        </div>
-        <p><em>* 생수 구매 시 수원지, 미네랄 함량, 제조일자 등을 꼼꼼히 확인하고 본인의 기호에 맞는 제품을 선택하는 것이 좋습니다.</em></p>
-    </div>
-
-    <!-- 구매 섹션 -->
-    <div class="product" style="margin-top: 40px;">
-        <h2>생수 2L 추천 상품 구매하기</h2>
-        <p>분석하신 생수 또는 인기 생수 브랜드를 최저가로 만나보세요.</p>
-        <div class="price">최저가 확인하기</div>
-        <button onclick="buyWater()">판매처 보기</button>
-
-        <div class="store-list" id="storeList">
-            <h3>공식 판매처 리스트</h3>
-            <div class="store"><a href="https://www.coupang.com" target="_blank" rel="noopener noreferrer">쿠팡 (로켓배송)</a></div>
-            <div class="store"><a href="https://www.11st.co.kr" target="_blank" rel="noopener noreferrer">11번가 (특가)</a></div>
-            <div class="store"><a href="https://www.gmarket.co.kr" target="_blank" rel="noopener noreferrer">G마켓 (스마일배송)</a></div>
-        </div>
-    </div>
-
-    <!-- 제휴 문의 -->
-    <div class="contact-form" id="contact">
-        <h3>제휴 및 서비스 문의</h3>
-        <p>광고 게재, 서비스 제휴, 기타 문의 사항이 있으시면 아래 양식을 통해 남겨주세요.</p>
-        <form action="https://formspree.io/f/xqeyeboq" method="POST">
-            <div class="form-group">
-                <label for="name">이름 또는 기업명</label>
-                <input type="text" id="name" name="name" required placeholder="이름을 입력하세요">
+    <section id="ai-tool">
+        <h2>1. AI 생수 브랜드 판별기</h2>
+        <div class="card">
+            <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
+                <p>📷 클릭하여 이미지 업로드 (삼다수/몽베스트)</p>
+                <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="previewImage(event)">
             </div>
-            <div class="form-group">
-                <label for="email">이메일 주소</label>
-                <input type="email" id="email" name="_replyto" required placeholder="example@domain.com">
+            <img id="imagePreview" alt="미리보기">
+            <button class="btn-main" style="margin-top:20px" onclick="analyzeBrand()">분석 시작하기</button>
+            <div id="aiResult" class="ai-result">
+                <h3 id="resBrand">브랜드: 분석 중...</h3>
+                <p id="resConfidence">신뢰도: 0%</p>
+                <p id="resSimilar">유사 브랜드: -</p>
             </div>
-            <div class="form-group">
-                <label for="message">상세 문의 내용</label>
-                <textarea id="message" name="message" rows="5" required placeholder="문의 내용을 상세히 적어주세요"></textarea>
-            </div>
-            <button type="submit">문의 제출하기</button>
-        </form>
-    </div>
+        </div>
+    </section>
 
-    <!-- 댓글 섹션 -->
-    <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 10px; box-shadow: var(--shadow);"></div>
-    <script>
-        (function() {
-        var d = document, s = d.createElement('script');
-        s.src = 'https://prowater.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-        })();
-    </script>
+    <section id="price-compare">
+        <h2>2. 실시간 생수 가격 비교</h2>
+        <div class="card">
+            <input type="text" id="priceSearch" placeholder="브랜드 검색 (예: 삼다수)" onkeyup="searchPrice()">
+            <table class="price-table">
+                <thead><tr><th>쇼핑몰</th><th>가격 (2L)</th><th>링크</th></tr></thead>
+                <tbody id="priceTableBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="intake-calc">
+        <h2>3. 하루 권장 물 섭취량 계산기</h2>
+        <div class="card">
+            <div class="input-group"><label>체중 (kg)</label><input type="number" id="weight" oninput="calculateIntake()"></div>
+            <div class="input-group">
+                <label>활동량</label>
+                <select id="activity" onchange="calculateIntake()">
+                    <option value="low">낮음</option>
+                    <option value="normal" selected>보통</option>
+                    <option value="high">높음</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>카페인 섭취</label>
+                <select id="caffeine" onchange="calculateIntake()">
+                    <option value="no">아니오</option>
+                    <option value="yes">예</option>
+                </select>
+            </div>
+            <div style="text-align:center">
+                <h3>권장 섭취량: <span id="recommendedIntake">-</span> L</h3>
+                <div class="progress-container"><div id="progressBar"></div></div>
+                <button onclick="addWater(0.2)" style="margin-top:10px">한 잔 마심 (200ml)</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="brand-db">
+        <h2>4. 생수 브랜드 데이터베이스</h2>
+        <input type="text" id="dbSearch" placeholder="브랜드 정보 검색..." onkeyup="filterDB()" style="margin-bottom:20px">
+        <div class="db-grid" id="dbGrid"></div>
+    </section>
+
+    <section id="ranking">
+        <h2>5. 인기 생수 브랜드 TOP 10</h2>
+        <div id="rankContainer"></div>
+    </section>
+
 </div>
 
 <footer>
-    <div class="footer-links">
-        <a href="terms.html">이용약관</a> | 
-        <a href="privacy.html">개인정보처리방침</a>
+    <div style="margin-bottom:20px">
+        <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a>
     </div>
-    <p>© 2026 Water Store AI Platform. All rights reserved.</p>
-    <p style="font-size: 12px; color: #888;">본 사이트는 정보 제공을 목적으로 하며, 각 브랜드의 공식 홈페이지가 아닙니다.</p>
+    <p>© 2026 Water Utility Tools Platform</p>
 </footer>
 
-<script src="main.js"></script>
+<script>
+    // 데이터 및 로직 통합
+    const brandData = [
+        { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산암반수" },
+        { name: "백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "천연 화산암반수" },
+        { name: "몽베스트", source: "경기 포천", ca: "12.5", mg: "3.2", ph: "7.4", desc: "미네랄 풍부 프리미엄 생수" }
+    ];
+    const rankingData = [
+        { rank: 1, name: "삼다수", score: "4.9", desc: "신뢰도 1위" },
+        { rank: 2, name: "백산수", score: "4.7", desc: "백두산의 깨끗함" },
+        { rank: 3, name: "몽베스트", score: "4.6", desc: "트렌디 패키지" }
+    ];
+
+    function previewImage(e) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const p = document.getElementById('imagePreview');
+            p.src = reader.result; p.style.display = 'block';
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    function analyzeBrand() {
+        const r = document.getElementById('aiResult');
+        r.style.display = 'block'; document.getElementById('resBrand').innerText = "분석 중...";
+        setTimeout(() => {
+            document.getElementById('resBrand').innerText = "브랜드: 제주 삼다수";
+            document.getElementById('resConfidence').innerText = "신뢰도: 94%";
+            document.getElementById('resSimilar').innerText = "유사 브랜드: 백산수";
+        }, 1000);
+    }
+
+    function searchPrice() {
+        const b = document.getElementById('priceTableBody'); b.innerHTML = "";
+        const q = document.getElementById('priceSearch').value;
+        if(q.length < 1) return;
+        [{n:"쿠팡",p:980},{n:"네이버",p:1050},{n:"11번가",p:1100}].forEach(s => {
+            b.innerHTML += `<tr><td>${s.n}</td><td>${s.p}원</td><td><a href="#" class="buy-btn">구매</a></td></tr>`;
+        });
+    }
+
+    let drank = 0;
+    function calculateIntake() {
+        const w = document.getElementById('weight').value || 0;
+        let base = w * 0.03;
+        if(document.getElementById('activity').value === 'high') base += 0.5;
+        if(document.getElementById('caffeine').value === 'yes') base += 0.3;
+        const target = base.toFixed(1);
+        document.getElementById('recommendedIntake').innerText = target;
+        document.getElementById('progressBar').style.width = Math.min((drank/target)*100, 100) + "%";
+    }
+    function addWater(a) { drank += a; calculateIntake(); }
+
+    function filterDB() {
+        const g = document.getElementById('dbGrid'); g.innerHTML = "";
+        const q = document.getElementById('dbSearch').value.toLowerCase();
+        brandData.filter(b => b.name.includes(q)).forEach(b => {
+            g.innerHTML += `<div class="db-card"><h3>${b.name}</h3><p>${b.desc}</p></div>`;
+        });
+    }
+
+    function toggleTheme() {
+        const h = document.documentElement;
+        const d = h.getAttribute('data-theme') === 'dark';
+        h.setAttribute('data-theme', d ? 'light' : 'dark');
+        document.getElementById('themeBtn').innerText = d ? "🌙 다크 모드" : "☀️ 라이트 모드";
+    }
+
+    window.onload = () => {
+        brandData.forEach(b => document.getElementById('dbGrid').innerHTML += `<div class="db-card"><h3>${b.name}</h3><p>${b.desc}</p></div>`);
+        rankingData.forEach(r => document.getElementById('rankContainer').innerHTML += `<div class="rank-item"><div class="rank-number">${r.rank}</div><div><h4>${r.name}</h4><p>${r.desc}</p></div></div>`);
+    };
+</script>
 </body>
 </html>
