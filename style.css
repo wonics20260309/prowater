@@ -10,6 +10,7 @@
     --footer-bg: #dcecff;
     --footer-text: #555;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    --border-color: #ddd;
 }
 
 [data-theme="dark"] {
@@ -24,14 +25,16 @@
     --footer-bg: #1a1a1a;
     --footer-text: #aaa;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
+    --border-color: #444;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
     background: var(--bg-color);
     color: var(--card-text);
     margin: 0;
     transition: background 0.3s, color 0.3s;
+    line-height: 1.6;
 }
 
 header {
@@ -42,25 +45,87 @@ header {
     position: relative;
 }
 
+header h1 {
+    margin-bottom: 10px;
+}
+
 .theme-toggle {
     position: absolute;
     top: 20px;
     right: 20px;
 }
 
+/* Navigation Styles */
+.main-nav {
+    background: var(--card-bg);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    margin: 0;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--card-text);
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--price-color);
+}
+
 .container {
     max-width: 900px;
     margin: auto;
-    padding: 40px;
+    padding: 40px 20px;
+}
+
+/* Content Sections */
+.content-section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow);
+}
+
+.content-section h2 {
+    color: var(--price-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.brand-info {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 5px solid var(--price-color);
+}
+
+.brand-info h3 {
+    margin-top: 0;
 }
 
 .product {
     background: var(--card-bg);
     border-radius: 10px;
-    padding: 25px;
+    padding: 30px;
     text-align: center;
     box-shadow: var(--shadow);
     transition: background 0.3s, box-shadow 0.3s;
+    margin-bottom: 40px;
 }
 
 /* AI Camera Styles */
@@ -112,6 +177,7 @@ header {
     font-size: 24px;
     color: var(--price-color);
     margin: 15px 0;
+    font-weight: bold;
 }
 
 button {
@@ -123,6 +189,7 @@ button {
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
+    font-weight: bold;
 }
 
 button:hover {
@@ -171,16 +238,39 @@ button:hover {
 .form-group textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     background: var(--card-bg);
     color: var(--card-text);
+    box-sizing: border-box;
 }
 
 footer {
     margin-top: 50px;
     text-align: center;
-    padding: 20px;
+    padding: 30px 20px;
     background: var(--footer-bg);
     color: var(--footer-text);
+}
+
+.footer-links {
+    margin-bottom: 15px;
+}
+
+.footer-links a {
+    color: var(--footer-text);
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
 }

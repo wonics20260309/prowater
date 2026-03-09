@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>생수 브랜드 AI 판별기 - 파일 업로드</title>
+    <meta name="description" content="AI를 활용하여 삼다수, 몽베스트 등 다양한 생수 브랜드를 판별하고, 생수별 특징과 정보를 제공하는 서비스입니다.">
     <meta name="google-adsense-account" content="ca-pub-9684896572010314">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9684896572010314"
      crossorigin="anonymous"></script>
@@ -19,13 +20,29 @@
         <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
     </div>
     <h1>물 브랜드 판별 AI</h1>
-    <p>이미지 파일을 업로드하여 브랜드를 분석해보세요</p>
+    <p>이미지 파일을 업로드하여 브랜드를 분석하고 정보를 알아보세요</p>
 </header>
 
+<nav class="main-nav">
+    <ul class="nav-links">
+        <li><a href="#ai-tool">AI 판별기</a></li>
+        <li><a href="#about-service">서비스 소개</a></li>
+        <li><a href="#water-info">생수 브랜드 정보</a></li>
+        <li><a href="#contact">제휴 문의</a></li>
+    </ul>
+</nav>
+
 <div class="container">
-    <div class="product">
-        <h2>브랜드 분석 (이미지 업로드)</h2>
-        <p>삼다수 또는 몽베스트 생수 사진을 업로드해주세요</p>
+    
+    <div class="content-section" id="about-service">
+        <h2>물 브랜드 판별 AI 서비스란?</h2>
+        <p>현대인들은 건강을 위해 다양한 생수를 소비합니다. 하지만 시중에 판매되는 수많은 생수 브랜드 중에서 자신이 마시는 물이 어떤 브랜드인지, 어떤 특징을 가지고 있는지 헷갈릴 때가 많습니다.</p>
+        <p>저희 <strong>생수 브랜드 AI 판별기</strong>는 최신 딥러닝 기술인 TensorFlow.js와 Google의 Teachable Machine을 활용하여, 사용자가 업로드한 생수병 사진만으로 어떤 브랜드의 제품인지 정확하게 분석해 줍니다. 복잡한 검색 없이 빠르고 간편하게 생수 정보를 확인해 보세요.</p>
+    </div>
+
+    <div class="product" id="ai-tool">
+        <h2>AI 브랜드 분석 (이미지 업로드)</h2>
+        <p>삼다수 또는 몽베스트 생수 사진을 업로드해주시면 AI가 실시간으로 분석합니다.</p>
         
         <!-- 이미지 업로드 및 미리보기 영역 -->
         <div class="upload-section" style="margin: 20px 0;">
@@ -40,26 +57,45 @@
         <div id="label-container" style="margin-top: 15px;"></div>
     </div>
 
+    <div class="content-section" id="water-info">
+        <h2>주요 생수 브랜드 정보 및 특징</h2>
+        
+        <div class="brand-info">
+            <h3>제주 삼다수 (Jeju Samdasoo)</h3>
+            <p><strong>수원지:</strong> 제주특별자치도 제주시 조천읍 교래리</p>
+            <p><strong>특징:</strong> 대한민국 1위 생수 브랜드로, 한라산 국립공원 내 해발 1,450m 높이에 스며든 빗물이 화산 암반층을 거쳐 천연 여과된 화산 암반수입니다. 칼슘과 칼륨, 마그네슘 등 미네랄이 풍부하며, 특히 바나듐과 실리카 성분이 함유되어 있어 물맛이 부드럽고 깔끔한 것이 특징입니다.</p>
+        </div>
+
+        <div class="brand-info">
+            <h3>몽베스트 (Mongbest)</h3>
+            <p><strong>수원지:</strong> 경기도 포천시 이동면</p>
+            <p><strong>특징:</strong> 몽베스트는 내추럴 미네랄 워터로, 화강암반층이 천연 필터 역할을 하여 깨끗하게 정화된 1급수입니다. 프리미엄 보라색 패키지 디자인으로 유명하며, 현대인의 라이프스타일에 맞춘 다양한 용량(330ml, 500ml, 1L, 2L) 라인업을 제공하여 휴대성과 실용성을 높인 것이 장점입니다.</p>
+        </div>
+        <p><em>* 생수 구매 시 수원지, 미네랄 함량, 제조일자 등을 꼼꼼히 확인하고 본인의 기호에 맞는 제품을 선택하는 것이 좋습니다.</em></p>
+    </div>
+
     <!-- 구매 섹션 -->
     <div class="product" style="margin-top: 40px;">
-        <h2>생수 2L 상품</h2>
-        <div class="price">3,000원</div>
-        <button onclick="buyWater()">구매하기</button>
+        <h2>생수 2L 추천 상품 구매하기</h2>
+        <p>분석하신 생수 또는 인기 생수 브랜드를 최저가로 만나보세요.</p>
+        <div class="price">최저가 확인하기</div>
+        <button onclick="buyWater()">판매처 보기</button>
 
         <div class="store-list" id="storeList">
-            <h3>판매 사이트</h3>
-            <div class="store"><a href="https://www.coupang.com" target="_blank">쿠팡</a></div>
-            <div class="store"><a href="https://www.11st.co.kr" target="_blank">11번가</a></div>
-            <div class="store"><a href="https://www.gmarket.co.kr" target="_blank">G마켓</a></div>
+            <h3>공식 판매처 리스트</h3>
+            <div class="store"><a href="https://www.coupang.com" target="_blank" rel="noopener noreferrer">쿠팡 (로켓배송)</a></div>
+            <div class="store"><a href="https://www.11st.co.kr" target="_blank" rel="noopener noreferrer">11번가 (특가)</a></div>
+            <div class="store"><a href="https://www.gmarket.co.kr" target="_blank" rel="noopener noreferrer">G마켓 (스마일배송)</a></div>
         </div>
     </div>
 
     <!-- 제휴 문의 -->
-    <div class="contact-form">
-        <h3>제휴 및 파트너 문의</h3>
+    <div class="contact-form" id="contact">
+        <h3>제휴 및 서비스 문의</h3>
+        <p>광고 게재, 서비스 제휴, 기타 문의 사항이 있으시면 아래 양식을 통해 남겨주세요.</p>
         <form action="https://formspree.io/f/xqeyeboq" method="POST">
             <div class="form-group">
-                <label for="name">이름/기업명</label>
+                <label for="name">이름 또는 기업명</label>
                 <input type="text" id="name" name="name" required placeholder="이름을 입력하세요">
             </div>
             <div class="form-group">
@@ -67,7 +103,7 @@
                 <input type="email" id="email" name="_replyto" required placeholder="example@domain.com">
             </div>
             <div class="form-group">
-                <label for="message">문의 내용</label>
+                <label for="message">상세 문의 내용</label>
                 <textarea id="message" name="message" rows="5" required placeholder="문의 내용을 상세히 적어주세요"></textarea>
             </div>
             <button type="submit">문의 제출하기</button>
@@ -87,7 +123,12 @@
 </div>
 
 <footer>
-    <p>© 2026 Water Store AI Platform</p>
+    <div class="footer-links">
+        <a href="terms.html">이용약관</a> | 
+        <a href="privacy.html">개인정보처리방침</a>
+    </div>
+    <p>© 2026 Water Store AI Platform. All rights reserved.</p>
+    <p style="font-size: 12px; color: #888;">본 사이트는 정보 제공을 목적으로 하며, 각 브랜드의 공식 홈페이지가 아닙니다.</p>
 </footer>
 
 <script src="main.js"></script>
