@@ -69,18 +69,31 @@
             display: flex;
             justify-content: center;
             list-style: none;
-            padding: 15px 0;
+            padding: 0;
             margin: 0;
             overflow-x: auto;
         }
 
+        .nav-links li {
+            margin: 0;
+        }
+
         .nav-links li a {
-            padding: 10px 15px;
+            display: block;
+            padding: 20px 15px;
             text-decoration: none;
             color: var(--text-color);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-links li a.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            background: rgba(52, 152, 219, 0.05);
         }
 
         .container {
@@ -89,9 +102,19 @@
             padding: 0 20px;
         }
 
-        section {
-            margin-bottom: 60px;
-            scroll-margin-top: 80px;
+        /* 탭 컨텐츠 제어 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
@@ -247,17 +270,19 @@
 
 <nav>
     <ul class="nav-links">
-        <li><a href="#ai-tool">AI 판별</a></li>
-        <li><a href="#price-compare">가격 비교</a></li>
-        <li><a href="#intake-calc">수분 계산기</a></li>
-        <li><a href="#brand-db">브랜드 DB</a></li>
-        <li><a href="#ranking">랭킹 TOP 10</a></li>
+        <li><a href="#" class="nav-item active" onclick="showTab(event, 'ai-tool')">AI 판별</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'price-compare')">가격 비교</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'intake-calc')">수분 계산기</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'brand-db')">브랜드 DB</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'ranking')">랭킹 TOP 10</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'community')">커뮤니티</a></li>
     </ul>
 </nav>
 
 <div class="container">
 
-    <section id="ai-tool">
+    <!-- 1. AI Tool -->
+    <div id="ai-tool" class="tab-content active">
         <h2>1. AI 생수 브랜드 판별기</h2>
         <div class="card">
             <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
@@ -272,9 +297,10 @@
                 <p id="resSimilar">유사 브랜드: -</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="price-compare">
+    <!-- 2. Price Compare -->
+    <div id="price-compare" class="tab-content">
         <h2>2. 실시간 생수 가격 비교</h2>
         <div class="card">
             <input type="text" id="priceSearch" placeholder="브랜드 검색 (예: 삼다수)" onkeyup="searchPrice()">
@@ -283,9 +309,10 @@
                 <tbody id="priceTableBody"></tbody>
             </table>
         </div>
-    </section>
+    </div>
 
-    <section id="intake-calc">
+    <!-- 3. Intake Calc -->
+    <div id="intake-calc" class="tab-content">
         <h2>3. 하루 권장 물 섭취량 계산기</h2>
         <div class="card">
             <div class="input-group"><label>체중 (kg)</label><input type="number" id="weight" oninput="calculateIntake()"></div>
@@ -307,64 +334,83 @@
             <div style="text-align:center">
                 <h3>권장 섭취량: <span id="recommendedIntake">-</span> L</h3>
                 <div class="progress-container"><div id="progressBar"></div></div>
-                <button onclick="addWater(0.2)" style="margin-top:10px">한 잔 마심 (200ml)</button>
+                <button onclick="addWater(0.2)" style="margin-top:10px" class="btn-main" style="width: auto; padding: 10px 20px;">한 잔 마심 (200ml)</button>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="brand-db">
+    <!-- 4. Brand DB -->
+    <div id="brand-db" class="tab-content">
         <h2>4. 생수 브랜드 데이터베이스</h2>
         <input type="text" id="dbSearch" placeholder="브랜드 정보 검색..." onkeyup="filterDB()" style="margin-bottom:20px">
         <div class="db-grid" id="dbGrid"></div>
-    </section>
+    </div>
 
-    <section id="ranking">
+    <!-- 5. Ranking -->
+    <div id="ranking" class="tab-content">
         <h2>5. 인기 생수 브랜드 TOP 10</h2>
         <div id="rankContainer"></div>
-    </section>
+    </div>
 
-    <!-- 제휴 문의 -->
-    <section id="contact" class="contact-form" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow);">
-        <h3 style="color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px;">제휴 및 서비스 문의</h3>
-        <p>광고 게재, 서비스 제휴, 기타 문의 사항이 있으시면 아래 양식을 통해 남겨주세요.</p>
-        <form action="https://formspree.io/f/xqeyeboq" method="POST">
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">이름 또는 기업명</label>
-                <input type="text" name="name" required placeholder="이름을 입력하세요" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-            </div>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">이메일 주소</label>
-                <input type="email" name="_replyto" required placeholder="example@domain.com" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-            </div>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">상세 문의 내용</label>
-                <textarea name="message" rows="5" required placeholder="문의 내용을 상세히 적어주세요" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
-            </div>
-            <button type="submit" class="btn-main">문의 제출하기</button>
-        </form>
-    </section>
+    <!-- 6. Community (Contact + Comments) -->
+    <div id="community" class="tab-content">
+        <h2>커뮤니티 및 문의</h2>
+        <!-- 제휴 문의 -->
+        <section id="contact" class="contact-form" style="background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow);">
+            <h3 style="color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px;">제휴 및 서비스 문의</h3>
+            <p>광고 게재, 서비스 제휴, 기타 문의 사항이 있으시면 아래 양식을 통해 남겨주세요.</p>
+            <form action="https://formspree.io/f/xqeyeboq" method="POST">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">이름 또는 기업명</label>
+                    <input type="text" name="name" required placeholder="이름을 입력하세요" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">이메일 주소</label>
+                    <input type="email" name="_replyto" required placeholder="example@domain.com" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">상세 문의 내용</label>
+                    <textarea name="message" rows="5" required placeholder="문의 내용을 상세히 적어주세요" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+                </div>
+                <button type="submit" class="btn-main">문의 제출하기</button>
+            </form>
+        </section>
 
-    <!-- 댓글 섹션 -->
-    <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow);"></div>
-    <script>
-        (function() {
-        var d = document, s = d.createElement('script');
-        s.src = 'https://prowater.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-        })();
-    </script>
+        <!-- 댓글 섹션 -->
+        <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow);"></div>
+    </div>
 </div>
 
 <footer>
     <div style="margin-bottom:20px">
-        <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a>
+        <a href="privacy.html" style="color: var(--text-color); margin: 0 10px; text-decoration: none;">개인정보처리방침</a> | 
+        <a href="terms.html" style="color: var(--text-color); margin: 0 10px; text-decoration: none;">이용약관</a>
     </div>
     <p>© 2026 Water Utility Tools Platform</p>
 </footer>
 
 <script>
-    // 데이터 및 로직 통합 (국내 주요 브랜드 10종으로 확장)
+    // 탭 전환 로직
+    function showTab(event, tabId) {
+        event.preventDefault();
+        
+        // 모든 탭 컨텐츠 숨기기
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.remove('active'));
+        
+        // 모든 탭 버튼 비활성화
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('active'));
+        
+        // 선택된 탭 컨텐츠 및 버튼 활성화
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        
+        // 상단으로 스크롤
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 데이터 정의 (10종 생수 브랜드)
     const brandData = [
         { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산 암반층이 거른 깨끗한 물" },
         { name: "농심 백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "백두산 천지의 물이 솟아오르는 자연 용천수" },
@@ -391,6 +437,7 @@
         { rank: 10, name: "닥터유 제주용암수", score: "3.7", desc: "건강을 생각하는 고함량 미네랄 워터" }
     ];
 
+    // AI Tool 로직
     function previewImage(e) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -402,23 +449,27 @@
 
     function analyzeBrand() {
         const r = document.getElementById('aiResult');
-        r.style.display = 'block'; document.getElementById('resBrand').innerText = "분석 중...";
+        r.style.display = 'block'; 
+        document.getElementById('resBrand').innerText = "분석 중...";
         setTimeout(() => {
             document.getElementById('resBrand').innerText = "브랜드: 제주 삼다수";
             document.getElementById('resConfidence').innerText = "신뢰도: 94%";
-            document.getElementById('resSimilar').innerText = "유사 브랜드: 백산수";
-        }, 1000);
+            document.getElementById('resSimilar').innerText = "유사 브랜드: 백산수, 지리산수";
+        }, 1500);
     }
 
+    // 가격 비교 로직
     function searchPrice() {
         const b = document.getElementById('priceTableBody'); b.innerHTML = "";
         const q = document.getElementById('priceSearch').value;
         if(q.length < 1) return;
-        [{n:"쿠팡",p:980},{n:"네이버",p:1050},{n:"11번가",p:1100}].forEach(s => {
-            b.innerHTML += `<tr><td>${s.n}</td><td>${s.p}원</td><td><a href="#" class="buy-btn">구매</a></td></tr>`;
+        const shops = [{n:"쿠팡",p:980},{n:"네이버",p:1050},{n:"11번가",p:1100}];
+        shops.forEach(s => {
+            b.innerHTML += `<tr><td>${s.n}</td><td>${s.p.toLocaleString()}원</td><td><a href="#" class="buy-btn">구매하기</a></td></tr>`;
         });
     }
 
+    // 수분 계산기 로직
     let drank = 0;
     function calculateIntake() {
         const w = document.getElementById('weight').value || 0;
@@ -427,10 +478,12 @@
         if(document.getElementById('caffeine').value === 'yes') base += 0.3;
         const target = base.toFixed(1);
         document.getElementById('recommendedIntake').innerText = target;
-        document.getElementById('progressBar').style.width = Math.min((drank/target)*100, 100) + "%";
+        const percent = Math.min((drank/target)*100, 100);
+        document.getElementById('progressBar').style.width = (isNaN(percent) ? 0 : percent) + "%";
     }
     function addWater(a) { drank += a; calculateIntake(); }
 
+    // 브랜드 DB 로직
     function getDBCardHTML(b) {
         return `<div class="db-card">
             <h3>${b.name}</h3>
@@ -450,16 +503,34 @@
         });
     }
 
+    // 테마 설정
     function toggleTheme() {
         const h = document.documentElement;
         const d = h.getAttribute('data-theme') === 'dark';
         h.setAttribute('data-theme', d ? 'light' : 'dark');
         document.getElementById('themeBtn').innerText = d ? "🌙 다크 모드" : "☀️ 라이트 모드";
+        localStorage.setItem('theme', d ? 'light' : 'dark');
     }
 
+    // 초기화
     window.onload = () => {
         brandData.forEach(b => document.getElementById('dbGrid').innerHTML += getDBCardHTML(b));
-        rankingData.forEach(r => document.getElementById('rankContainer').innerHTML += `<div class="rank-item"><div class="rank-number">${r.rank}</div><div><h4>${r.name} (평점: ${r.score})</h4><p>${r.desc}</p></div></div>`);
+        rankingData.forEach(r => document.getElementById('rankContainer').innerHTML += `
+            <div class="rank-item">
+                <div class="rank-number">${r.rank}</div>
+                <div><h4>${r.name} (평점: ${r.score})</h4><p>${r.desc}</p></div>
+            </div>`);
+        
+        // 다크모드 복구
+        if(localStorage.getItem('theme') === 'dark') toggleTheme();
+
+        // Disqus 로드
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://prowater.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
     };
 </script>
 </body>
