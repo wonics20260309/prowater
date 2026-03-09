@@ -364,16 +364,31 @@
 </footer>
 
 <script>
-    // 데이터 및 로직 통합
+    // 데이터 및 로직 통합 (국내 주요 브랜드 10종으로 확장)
     const brandData = [
-        { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산암반수" },
-        { name: "백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "천연 화산암반수" },
-        { name: "몽베스트", source: "경기 포천", ca: "12.5", mg: "3.2", ph: "7.4", desc: "미네랄 풍부 프리미엄 생수" }
+        { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산 암반층이 거른 깨끗한 물" },
+        { name: "농심 백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "백두산 천지의 물이 솟아오르는 자연 용천수" },
+        { name: "아이시스 8.0", source: "충북 청주 등", ca: "19.8", mg: "2.7", ph: "8.0", desc: "pH 8.0의 약알칼리성 미네랄 워터" },
+        { name: "몽베스트", source: "경기 포천", ca: "12.5", mg: "3.2", ph: "7.4", desc: "풍부한 미네랄과 세련된 패키지의 프리미엄 생수" },
+        { name: "강원 평창수", source: "강원 평창", ca: "16.5", mg: "3.0", ph: "7.5", desc: "강원도 청정지역의 맑은 암반수, 올림픽 공식 생수" },
+        { name: "풀무원 샘물", source: "경기 포천 등", ca: "13.0", mg: "2.2", ph: "7.4", desc: "철저한 품질 관리와 균형 잡힌 미네랄 밸런스" },
+        { name: "스파클", source: "충남 천안 등", ca: "8.5", mg: "1.2", ph: "7.3", desc: "자가 배송 시스템으로 유명한 가성비 최고의 생수" },
+        { name: "지리산수", source: "경남 산청", ca: "10.5", mg: "2.1", ph: "7.6", desc: "지리산 국립공원 인근 청정 구역의 맑은 샘물" },
+        { name: "동원 샘물", source: "경기 연천 등", ca: "9.2", mg: "1.8", ph: "7.4", desc: "믿고 마시는 동원의 안전하고 깨끗한 품질의 물" },
+        { name: "닥터유 제주용암수", source: "제주 구좌읍", ca: "50.0", mg: "20.0", ph: "8.1", desc: "미네랄 함량이 일반 생수보다 압도적으로 높은 용암 해수" }
     ];
+
     const rankingData = [
-        { rank: 1, name: "삼다수", score: "4.9", desc: "신뢰도 1위" },
-        { rank: 2, name: "백산수", score: "4.7", desc: "백두산의 깨끗함" },
-        { rank: 3, name: "몽베스트", score: "4.6", desc: "트렌디 패키지" }
+        { rank: 1, name: "제주 삼다수", score: "4.9", desc: "시장 점유율 1위, 독보적인 브랜드 신뢰도" },
+        { rank: 2, name: "농심 백산수", score: "4.7", desc: "백두산 화산 암반수의 깨끗한 맛" },
+        { rank: 3, name: "아이시스 8.0", score: "4.6", desc: "약알칼리성 밸런스와 부드러운 목넘김" },
+        { rank: 4, name: "몽베스트", score: "4.5", desc: "트렌디한 디자인과 높은 미네랄 함량" },
+        { rank: 5, name: "강원 평창수", score: "4.3", desc: "강원도의 청정함이 느껴지는 깔끔한 맛" },
+        { rank: 6, name: "풀무원 샘물", score: "4.1", desc: "자연이 만든 여과 방식으로 균형 잡힌 맛" },
+        { rank: 7, name: "스파클", score: "4.0", desc: "뛰어난 가성비와 편리한 정기 배송 서비스" },
+        { rank: 8, name: "지리산수", score: "3.9", desc: "지리산 계곡의 맑은 기운을 담은 샘물" },
+        { rank: 9, name: "동원 샘물", score: "3.8", desc: "언제 어디서나 부담 없이 즐기는 깨끗한 물" },
+        { rank: 10, name: "닥터유 제주용암수", score: "3.7", desc: "건강을 생각하는 고함량 미네랄 워터" }
     ];
 
     function previewImage(e) {
@@ -416,11 +431,22 @@
     }
     function addWater(a) { drank += a; calculateIntake(); }
 
+    function getDBCardHTML(b) {
+        return `<div class="db-card">
+            <h3>${b.name}</h3>
+            <p style="font-size: 0.85rem; color: #777;">수원지: ${b.source}</p>
+            <p style="margin: 10px 0; font-size: 0.9rem;">
+                <strong>Ca:</strong> ${b.ca} | <strong>Mg:</strong> ${b.mg} | <strong>pH:</strong> ${b.ph}
+            </p>
+            <p>${b.desc}</p>
+        </div>`;
+    }
+
     function filterDB() {
         const g = document.getElementById('dbGrid'); g.innerHTML = "";
         const q = document.getElementById('dbSearch').value.toLowerCase();
         brandData.filter(b => b.name.includes(q)).forEach(b => {
-            g.innerHTML += `<div class="db-card"><h3>${b.name}</h3><p>${b.desc}</p></div>`;
+            g.innerHTML += getDBCardHTML(b);
         });
     }
 
@@ -432,8 +458,8 @@
     }
 
     window.onload = () => {
-        brandData.forEach(b => document.getElementById('dbGrid').innerHTML += `<div class="db-card"><h3>${b.name}</h3><p>${b.desc}</p></div>`);
-        rankingData.forEach(r => document.getElementById('rankContainer').innerHTML += `<div class="rank-item"><div class="rank-number">${r.rank}</div><div><h4>${r.name}</h4><p>${r.desc}</p></div></div>`);
+        brandData.forEach(b => document.getElementById('dbGrid').innerHTML += getDBCardHTML(b));
+        rankingData.forEach(r => document.getElementById('rankContainer').innerHTML += `<div class="rank-item"><div class="rank-number">${r.rank}</div><div><h4>${r.name} (평점: ${r.score})</h4><p>${r.desc}</p></div></div>`);
     };
 </script>
 </body>
