@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생수 구매 - 다크모드 지원</title>
+    <title>생수 브랜드 판별기 - 삼다수 vs 몽베스트</title>
     <link rel="stylesheet" href="style.css">
+    <!-- TensorFlow.js and Teachable Machine Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
 
@@ -12,14 +15,28 @@
     <div class="theme-toggle">
         <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
     </div>
-    <h1>생수 스토어</h1>
-    <p>깨끗한 물을 집까지 배송합니다</p>
+    <h1>물 브랜드 판별기</h1>
+    <p>삼다수와 몽베스트 브랜드를 AI가 구분합니다</p>
 </header>
 
 <div class="container">
+    <!-- Classifier Section -->
     <div class="product">
-        <h2>생수 2L</h2>
-        <p>신선하고 깨끗한 생수</p>
+        <h2>브랜드 판별 AI</h2>
+        <p>카메라에 생수를 비춰주세요</p>
+        
+        <div id="webcam-container"></div>
+        <div id="label-container"></div>
+        
+        <div style="margin-top: 20px;">
+            <button type="button" id="startBtn" onclick="init()">AI 시작하기</button>
+        </div>
+    </div>
+
+    <!-- Purchase Section (Existing) -->
+    <div class="product" style="margin-top: 40px;">
+        <h2>생수 2L 구매하기</h2>
+        <p>판별된 물을 바로 구매해보세요</p>
         <div class="price">3,000원</div>
         <button onclick="buyWater()">구매하기</button>
 
@@ -37,6 +54,7 @@
         </div>
     </div>
 
+    <!-- Contact Form (Existing) -->
     <div class="contact-form">
         <h3>제휴 문의</h3>
         <p>함께 성장할 파트너를 찾고 있습니다.</p>
@@ -56,27 +74,18 @@
             <button type="submit">문의 보내기</button>
         </form>
     </div>
-    </div>
 
+    <!-- Comments Section (Existing) -->
     <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 10px; box-shadow: var(--shadow);"></div>
     <script>
-        /**
-        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-        /*
-        var disqus_config = function () {
-        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-        };
-        */
-        (function() { // DON'T EDIT BELOW THIS LINE
+        (function() {
         var d = document, s = d.createElement('script');
         s.src = 'https://prowater.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
 
 <footer>
     <p>© 2026 Water Store</p>
