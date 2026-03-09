@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생수 구매 - 다크모드 지원</title>
+    <title>생수 브랜드 맞추기 AI 테스트</title>
     <link rel="stylesheet" href="style.css">
+    <!-- AI 라이브러리 로드 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
 
@@ -12,71 +15,69 @@
     <div class="theme-toggle">
         <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
     </div>
-    <h1>생수 스토어</h1>
-    <p>깨끗한 물을 집까지 배송합니다</p>
+    <h1>물 브랜드 맞추기 테스트</h1>
+    <p>AI가 삼다수와 몽베스트를 구분할 수 있을까요?</p>
 </header>
 
 <div class="container">
-    <div class="product">
-        <h2>생수 2L</h2>
-        <p>신선하고 깨끗한 생수</p>
+    <!-- AI 테스트 섹션 -->
+    <div class="product" id="ai-section">
+        <h2>내 물의 브랜드는?</h2>
+        <p>카메라에 생수 라벨이 잘 보이도록 비춰주세요</p>
+        
+        <div id="webcam-container"></div>
+        <div id="label-container"></div>
+        
+        <div style="margin-top: 20px;">
+            <button type="button" id="startBtn" onclick="initAI()">테스트 시작하기</button>
+        </div>
+    </div>
+
+    <!-- 기존 구매 섹션 -->
+    <div class="product" style="margin-top: 40px;">
+        <h2>생수 2L 구매</h2>
         <div class="price">3,000원</div>
         <button onclick="buyWater()">구매하기</button>
 
         <div class="store-list" id="storeList">
-            <h3>구매 가능한 사이트</h3>
-            <div class="store">
-                <a href="https://www.coupang.com" target="_blank">쿠팡에서 구매하기</a>
-            </div>
-            <div class="store">
-                <a href="https://www.11st.co.kr" target="_blank">11번가에서 구매하기</a>
-            </div>
-            <div class="store">
-                <a href="https://www.gmarket.co.kr" target="_blank">G마켓에서 구매하기</a>
-            </div>
+            <h3>판매처 리스트</h3>
+            <div class="store"><a href="https://www.coupang.com" target="_blank">쿠팡</a></div>
+            <div class="store"><a href="https://www.11st.co.kr" target="_blank">11번가</a></div>
+            <div class="store"><a href="https://www.gmarket.co.kr" target="_blank">G마켓</a></div>
         </div>
     </div>
 
+    <!-- 제휴 문의 -->
     <div class="contact-form">
         <h3>제휴 문의</h3>
-        <p>함께 성장할 파트너를 찾고 있습니다.</p>
         <form action="https://formspree.io/f/xqeyeboq" method="POST">
             <div class="form-group">
                 <label for="name">이름/기업명</label>
-                <input type="text" id="name" name="name" required placeholder="예: 홍길동 / (주)워터">
+                <input type="text" id="name" name="name" required>
             </div>
             <div class="form-group">
-                <label for="email">이메일 주소</label>
-                <input type="email" id="email" name="_replyto" required placeholder="example@email.com">
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="_replyto" required>
             </div>
             <div class="form-group">
                 <label for="message">문의 내용</label>
-                <textarea id="message" name="message" rows="5" required placeholder="제휴 제안 내용을 입력해주세요."></textarea>
+                <textarea id="message" name="message" rows="4" required></textarea>
             </div>
             <button type="submit">문의 보내기</button>
         </form>
     </div>
-    </div>
 
+    <!-- 댓글 기능 -->
     <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 10px; box-shadow: var(--shadow);"></div>
     <script>
-        /**
-        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-        /*
-        var disqus_config = function () {
-        this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
-        this.page.identifier = 'prowater-main'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-        };
-        */
-        (function() { // DON'T EDIT BELOW THIS LINE
+        (function() {
         var d = document, s = d.createElement('script');
         s.src = 'https://prowater.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
 
 <footer>
     <p>© 2026 Water Store</p>
