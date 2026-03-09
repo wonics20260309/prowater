@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생수 브랜드 맞추기 AI 테스트</title>
+    <title>생수 브랜드 AI 판별기</title>
     <link rel="stylesheet" href="style.css">
-    <!-- AI 라이브러리 로드 -->
+    <!-- TensorFlow.js 및 Teachable Machine 라이브러리 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
@@ -15,32 +15,31 @@
     <div class="theme-toggle">
         <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
     </div>
-    <h1>물 브랜드 맞추기 테스트</h1>
-    <p>AI가 삼다수와 몽베스트를 구분할 수 있을까요?</p>
+    <h1>물 브랜드 판별 AI</h1>
+    <p>Teachable Machine을 이용한 삼다수/몽베스트 구분</p>
 </header>
 
 <div class="container">
-    <!-- AI 테스트 섹션 -->
-    <div class="product" id="ai-section">
-        <h2>내 물의 브랜드는?</h2>
-        <p>카메라에 생수 라벨이 잘 보이도록 비춰주세요</p>
+    <div class="product">
+        <h2>브랜드 분석 카메라</h2>
+        <p>카메라에 물병 라벨을 비추고 분석 버튼을 누르세요</p>
         
         <div id="webcam-container"></div>
-        <div id="label-container"></div>
+        <div id="label-container" style="margin-top: 15px;"></div>
         
         <div style="margin-top: 20px;">
-            <button type="button" id="startBtn" onclick="initAI()">테스트 시작하기</button>
+            <button type="button" id="startBtn" onclick="init()">Start</button>
         </div>
     </div>
 
-    <!-- 기존 구매 섹션 -->
+    <!-- 구매 섹션 -->
     <div class="product" style="margin-top: 40px;">
-        <h2>생수 2L 구매</h2>
+        <h2>생수 2L 상품</h2>
         <div class="price">3,000원</div>
         <button onclick="buyWater()">구매하기</button>
 
         <div class="store-list" id="storeList">
-            <h3>판매처 리스트</h3>
+            <h3>판매 사이트</h3>
             <div class="store"><a href="https://www.coupang.com" target="_blank">쿠팡</a></div>
             <div class="store"><a href="https://www.11st.co.kr" target="_blank">11번가</a></div>
             <div class="store"><a href="https://www.gmarket.co.kr" target="_blank">G마켓</a></div>
@@ -49,25 +48,25 @@
 
     <!-- 제휴 문의 -->
     <div class="contact-form">
-        <h3>제휴 문의</h3>
+        <h3>제휴 및 파트너 문의</h3>
         <form action="https://formspree.io/f/xqeyeboq" method="POST">
             <div class="form-group">
                 <label for="name">이름/기업명</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" required placeholder="이름을 입력하세요">
             </div>
             <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="_replyto" required>
+                <label for="email">이메일 주소</label>
+                <input type="email" id="email" name="_replyto" required placeholder="example@domain.com">
             </div>
             <div class="form-group">
                 <label for="message">문의 내용</label>
-                <textarea id="message" name="message" rows="4" required></textarea>
+                <textarea id="message" name="message" rows="5" required placeholder="문의 내용을 상세히 적어주세요"></textarea>
             </div>
-            <button type="submit">문의 보내기</button>
+            <button type="submit">문의 제출하기</button>
         </form>
     </div>
 
-    <!-- 댓글 기능 -->
+    <!-- 댓글 섹션 -->
     <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 10px; box-shadow: var(--shadow);"></div>
     <script>
         (function() {
@@ -80,7 +79,7 @@
 </div>
 
 <footer>
-    <p>© 2026 Water Store</p>
+    <p>© 2026 Water Store AI Platform</p>
 </footer>
 
 <script src="main.js"></script>
