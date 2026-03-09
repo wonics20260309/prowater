@@ -597,11 +597,28 @@
         if(document.getElementById('activity').value === 'high') base += 0.5;
         if(document.getElementById('caffeine').value === 'yes') base += 0.3;
         const target = base.toFixed(1);
+        
         document.getElementById('recommendedIntake').innerText = target;
-        const percent = Math.min((drank/target)*100, 100);
-        document.getElementById('progressBar').style.width = (isNaN(percent) ? 0 : percent) + "%";
+        document.getElementById('currentDrankDisplay').innerText = (drank * 1000).toFixed(0);
+        
+        const percent = Math.min((drank / target) * 100, 100);
+        const waterLevel = document.getElementById('waterLevel');
+        if (waterLevel) {
+            waterLevel.style.height = (isNaN(percent) ? 0 : percent) + "%";
+        }
     }
-    function addWater(a) { drank += a; calculateIntake(); }
+
+    function addWater(a) { 
+        drank += a; 
+        calculateIntake(); 
+    }
+
+    function resetWater() {
+        if(confirm("오늘의 섭취 기록을 초기화할까요?")) {
+            drank = 0;
+            calculateIntake();
+        }
+    }
 
     // 브랜드 DB 로직
     function getDBCardHTML(b) {
