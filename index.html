@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Water Utility Tools - 스마트 물 정보 플랫폼</title>
-    <meta name="description" content="AI 생수 판별, 물 섭취량 계산기, 가격 비교 및 생수 데이터베이스를 제공하는 종합 물 정보 도구입니다.">
+    <title>Water Utility Tools - 스마트 물 관리 플랫폼</title>
+    <meta name="description" content="AI 생수 판별, 물 섭취 기록 및 브랜드 DB를 제공하는 종합 건강 도구">
     
     <!-- 구글 애드센스 -->
     <meta name="google-adsense-account" content="ca-pub-9684896572010314">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9684896572010314" crossorigin="anonymous"></script>
 
-    <!-- TensorFlow.js 및 Teachable Machine (AI 기능을 위해 로드) -->
+    <!-- TensorFlow.js (AI 기능용) -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
@@ -18,23 +18,23 @@
         :root {
             --primary-color: #3498db;
             --secondary-color: #2980b9;
-            --bg-color: #f4f7f9;
+            --bg-color: #f0f4f8;
             --card-bg: #ffffff;
             --text-color: #2c3e50;
-            --shadow: 0 10px 20px rgba(0,0,0,0.05);
-            --border-radius: 12px;
+            --shadow: 0 10px 25px rgba(0,0,0,0.08);
+            --border-radius: 16px;
             --accent-color: #e74c3c;
         }
 
         [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-color: #ecf0f1;
-            --shadow: 0 10px 20px rgba(0,0,0,0.3);
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            font-family: 'Pretendard', -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -44,29 +44,29 @@
         }
 
         header {
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
-                        url('https://images.unsplash.com/photo-1548839140-29a749e1cf4d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                        url('https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-position: center;
             color: white;
-            padding: 80px 20px;
+            padding: 100px 20px;
             text-align: center;
             position: relative;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
+        .hero-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
+        .hero-desc { font-size: 1.1rem; opacity: 0.9; }
+
+        .theme-toggle { position: absolute; top: 20px; right: 20px; }
 
         nav {
             background: var(--card-bg);
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
 
         .nav-links {
@@ -75,57 +75,34 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            overflow-x: auto;
+            min-width: max-content;
         }
 
-        .nav-links li {
-            margin: 0;
-        }
-
-        .nav-links li a {
+        .nav-item {
             display: block;
-            padding: 20px 15px;
+            padding: 18px 20px;
             text-decoration: none;
             color: var(--text-color);
             font-weight: 600;
             font-size: 0.95rem;
-            white-space: nowrap;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
+            text-align: center;
         }
 
-        .nav-links li a.active {
+        .nav-item.active {
             color: var(--primary-color);
             border-bottom: 3px solid var(--primary-color);
             background: rgba(52, 152, 219, 0.05);
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
 
-        /* 탭 컨텐츠 제어 */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        .tab-content { display: none; animation: slideUp 0.5s ease; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.8rem;
-            color: var(--primary-color);
         }
 
         .card {
@@ -133,132 +110,61 @@
             border-radius: var(--border-radius);
             padding: 30px;
             box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-
-        .upload-zone {
-            border: 2px dashed var(--primary-color);
-            padding: 40px;
-            text-align: center;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        #imagePreview {
-            max-width: 100%;
-            border-radius: var(--border-radius);
-            margin-top: 20px;
-            display: none;
-        }
-
-        .ai-result {
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--bg-color);
-            border-radius: var(--border-radius);
-            display: none;
-        }
-
-        .price-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .price-table th, .price-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .buy-btn {
-            background: var(--primary-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.8rem;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        input[type="number"], input[type="text"], select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-            background: var(--card-bg);
-            color: var(--text-color);
-        }
-
-        .progress-container {
-            height: 20px;
-            background: #eee;
-            border-radius: 10px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-
-        #progressBar {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .db-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .db-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            border-top: 4px solid var(--primary-color);
-        }
-
-        .rank-item {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background: var(--card-bg);
-            margin-bottom: 10px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .rank-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-right: 25px;
-            width: 40px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
         .btn-main {
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
+            padding: 16px 30px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
             width: 100%;
             font-size: 1rem;
+            transition: background 0.3s, transform 0.1s;
         }
+        .btn-main:active { transform: scale(0.98); }
 
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            background: var(--card-bg);
-            margin-top: 60px;
+        .cup-container {
+            width: 140px; height: 180px; border: 6px solid var(--text-color);
+            border-top: none; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
+            margin: 20px auto; position: relative; overflow: hidden; background: rgba(52, 152, 219, 0.05);
+        }
+        .water {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
+            background: linear-gradient(180deg, #4fa4ff 0%, #2980b9 100%);
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .water::before {
+            content: ""; position: absolute; top: -10px; left: 0; width: 200%; height: 20px;
+            background: rgba(255,255,255,0.3); border-radius: 40%; animation: wave 2s infinite linear;
+        }
+        @keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        #scanner {
+            display: none; height: 4px; background: var(--primary-color);
+            position: relative; overflow: hidden; margin: 15px 0; border-radius: 2px;
+        }
+        #scanner::after {
+            content: ""; position: absolute; left: -50%; width: 50%; height: 100%;
+            background: white; animation: scan 1.5s infinite;
+        }
+        @keyframes scan { to { left: 100%; } }
+
+        .db-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .db-card { background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-top: 5px solid var(--primary-color); }
+        
+        .ad-space { background: rgba(0,0,0,0.02); border: 1px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; font-size: 0.8rem; color: #999; border-radius: 10px; }
+
+        footer { text-align: center; padding: 60px 20px; background: var(--card-bg); margin-top: 80px; font-size: 0.9rem; border-top: 1px solid rgba(0,0,0,0.05); }
+        .footer-links a { color: var(--text-color); margin: 0 10px; text-decoration: none; opacity: 0.7; }
+
+        @media (max-width: 600px) {
+            .hero-title { font-size: 1.8rem; }
+            .nav-item { padding: 15px 12px; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -266,446 +172,287 @@
 
 <header>
     <div class="theme-toggle">
-        <button onclick="toggleTheme()" id="themeBtn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:20px; cursor:pointer;">🌙 다크 모드</button>
+        <button onclick="toggleTheme()" id="themeBtn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:30px; cursor:pointer; font-weight:bold;">🌙 테마 변경</button>
     </div>
-    <h1>Water Utility Tools</h1>
-    <p>AI 기술과 데이터를 결합한 종합 물 정보 플랫폼</p>
+    <div class="hero-title">Record Your Glass</div>
+    <div class="hero-desc">오늘 당신이 마신 물 한 잔의 가치를 기록하세요.</div>
 </header>
 
 <nav>
     <ul class="nav-links">
-        <li><a href="#" class="nav-item active" onclick="showTab(event, 'about')">서비스 소개</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'ai-tool')">AI 판별</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'price-compare')">가격 비교</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'intake-calc')">수분 계산기</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'brand-db')">브랜드 DB</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'ranking')">랭킹 TOP 10</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'community')">커뮤니티</a></li>
+        <li><a href="#" class="nav-item active" onclick="showTab(event, 'dashboard')">🏠 홈</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'intake-calc')">💧 물 일지</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'ai-tool')">🧪 AI 판별</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'brand-db')">📚 브랜드 DB</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'community')">💬 커뮤니티</a></li>
     </ul>
 </nav>
 
 <div class="container">
 
-    <!-- 0. Service Introduction -->
-    <div id="about" class="tab-content active">
-        <h2>스마트한 수분 섭취를 위한 가이드</h2>
-        
-        <div class="card">
-            <h3>💧 물 섭취의 중요성</h3>
-            <p>우리 몸의 약 70%는 물로 구성되어 있습니다. 최근 조사에 따르면 한국인의 95% 이상이 물 섭취의 중요성을 인지하고 있지만, 정작 하루 권장량인 1.5L 이상을 마시는 사람은 13%에 불과합니다. 대부분 '목이 마르지 않아서' 혹은 '귀찮아서' 물을 충분히 마시지 않고 있습니다.</p>
+    <div id="dashboard" class="tab-content active">
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+            <h2 style="color: white; margin-top: 0;">오늘의 수분 현황</h2>
+            <div style="font-size: 3.5rem; font-weight: 800;"><span id="dashPercent">0</span>%</div>
+            <p>목표 <span id="dashGoal">0</span>L 중 <span id="dashCurrent">0</span>ml 섭취 중</p>
+            <button class="btn-main" style="background: white; color: var(--primary-color); margin-top: 10px; width: auto;" onclick="showTab(null, 'intake-calc')">기록하러 가기</button>
         </div>
+
+        <div class="ad-space">Google AdSense: 대시보드 하단 광고 영역</div>
 
         <div class="db-grid">
-            <div class="db-card">
-                <h3>하루 권장량</h3>
-                <p>WHO 기준 일일 <strong>1.5~2L</strong>의 수분 섭취를 권장합니다. 음식으로 섭취하는 수분을 포함하면 성인 남성은 약 3.7L, 여성은 2.7L의 총 수분이 필요합니다.</p>
+            <div class="db-card" onclick="showTab(null, 'ai-tool')" style="cursor:pointer;">
+                <h3>🤖 AI 브랜드 판별</h3>
+                <p>생수 라벨을 찍으면 어떤 브랜드인지 AI가 즉시 알려줍니다. 지금 체험해 보세요.</p>
             </div>
-            <div class="db-card">
-                <h3>수분의 효능</h3>
-                <ul>
-                    <li><strong>신진대사 촉진:</strong> 영양소 운반 및 노폐물 배출</li>
-                    <li><strong>피로 회복:</strong> 가벼운 탈수로 인한 무력감 방지</li>
-                    <li><strong>피부 건강:</strong> 피부 탄력 유지 및 건조 예방</li>
-                    <li><strong>체중 조절:</strong> 열량 소모 지원 및 체온 조절</li>
-                </ul>
+            <div class="db-card" onclick="showTab(null, 'brand-db')" style="cursor:pointer;">
+                <h3>🔎 생수 상세 정보</h3>
+                <p>내가 마시는 물의 수원지와 미네랄 함량을 확인해 보세요. 10종 이상의 데이터 제공.</p>
             </div>
-        </div>
-
-        <div class="card" style="margin-top: 20px; border-left: 5px solid var(--primary-color);">
-            <h3>✅ 올바른 수분 섭취 팁</h3>
-            <ul style="line-height: 2;">
-                <li><strong>기상 직후 한 잔:</strong> 자는 동안 손실된 수분을 보충하고 신진대사를 깨웁니다.</li>
-                <li><strong>갈증 느끼기 전에:</strong> 갈증은 이미 탈수가 진행 중이라는 신호입니다. 조금씩 자주 마셔주세요.</li>
-                <li><strong>생활 환경 개선:</strong> 책상 위나 침대 옆에 항상 물잔을 두어 마시기 쉬운 환경을 만드세요.</li>
-                <li><strong>목표 설정:</strong> Water Utility Tools의 계산기를 활용해 나만의 목표를 정해 보세요.</li>
-            </ul>
         </div>
     </div>
 
-    <!-- 1. AI Tool -->
-    <div id="ai-tool" class="tab-content">
-        <h2>1. AI 생수 브랜드 판별기</h2>
+    <div id="intake-calc" class="tab-content">
+        <h2>스마트 수분 섭취 일지</h2>
         <div class="card">
-            <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-                <p>📷 클릭하여 이미지 업로드 (삼다수/몽베스트)</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: center;">
+                <div style="flex: 1; min-width: 280px;">
+                    <div class="input-group" style="margin-bottom: 15px;"><label style="display:block; font-weight: bold;">체중 (kg)</label><input type="number" id="weight" placeholder="예: 70" oninput="calculateIntake()" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;"></div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label style="display:block; font-weight: bold;">활동량</label>
+                        <select id="activity" onchange="calculateIntake()" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;">
+                            <option value="low">낮음 (앉아서 생활)</option>
+                            <option value="normal" selected>보통 (가벼운 운동)</option>
+                            <option value="high">높음 (강도 높은 활동)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label style="display:block; font-weight: bold;">카페인 섭취</label>
+                        <select id="caffeine" onchange="calculateIntake()" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;">
+                            <option value="no">아니오</option>
+                            <option value="yes">예 (추가 보충 필요)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="flex: 1; text-align: center; min-width: 200px;">
+                    <div class="cup-container"><div id="waterLevel" class="water"></div></div>
+                    <h3 id="recommendedIntake">목표: 0.0L</h3>
+                    <p style="font-weight: bold; font-size: 1.2rem; color: var(--primary-color);">현재: <span id="currentDrankDisplay">0</span>ml</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="addWater(0.25)" class="btn-main">🥛 250ml 추가</button>
+                        <button onclick="addWater(0.5)" class="btn-main" style="background: var(--secondary-color);">🍼 500ml 추가</button>
+                    </div>
+                    <button onclick="resetWater()" style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer; text-decoration:underline;">기록 초기화</button>
+                </div>
+            </div>
+            
+            <div id="intakeHistoryContainer" style="margin-top: 30px; display: none;">
+                <h4>🕒 오늘의 기록 히스토리</h4>
+                <ul id="intakeHistoryList" style="list-style:none; padding:0; background:rgba(0,0,0,0.02); border-radius:10px; padding:15px; max-height: 200px; overflow-y: auto;"></ul>
+            </div>
+        </div>
+        <div class="ad-space">Google AdSense: 계산기 섹션 하단</div>
+    </div>
+
+    <div id="ai-tool" class="tab-content">
+        <h2>AI 생수 브랜드 판별기</h2>
+        <div class="card" style="text-align: center;">
+            <div class="upload-zone" onclick="document.getElementById('imageInput').click()" style="border: 3px dashed var(--primary-color); padding: 50px; border-radius: 20px; cursor: pointer;">
+                <p style="font-size: 1.2rem; font-weight: bold;">📸 생수병 라벨 사진을 업로드하세요</p>
                 <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="previewImage(event)">
             </div>
-            <img id="imagePreview" alt="미리보기">
-            <button class="btn-main" style="margin-top:20px" onclick="analyzeBrand()">분석 시작하기</button>
-            <div id="aiResult" class="ai-result">
-                <h3 id="resBrand">브랜드: 분석 중...</h3>
+            <img id="imagePreview" style="max-width: 100%; border-radius: 15px; margin-top: 20px; display: none; box-shadow: var(--shadow);">
+            
+            <div id="scanner"></div>
+            
+            <button class="btn-main" id="analyzeBtn" style="margin-top:20px; display: none;" onclick="analyzeBrand()">분석 시작하기</button>
+            
+            <div id="aiResult" class="card" style="display: none; margin-top: 20px; background: var(--bg-color); border-top: 5px solid var(--accent-color); text-align: left;">
+                <h3 id="resBrand">분석 결과: -</h3>
                 <p id="resConfidence">신뢰도: 0%</p>
-                <p id="resSimilar">유사 브랜드: -</p>
+                <p id="resSimilar">추천 대안: -</p>
+                <hr style="opacity: 0.1; margin: 15px 0;">
+                <p style="font-size: 0.9rem;">해당 브랜드의 최저가를 찾으시나요?</p>
+                <a href="https://www.coupang.com" id="buyLink" target="_blank" class="btn-main" style="text-decoration: none; display: inline-block; text-align: center;">최저가 구매하러 가기</a>
             </div>
         </div>
     </div>
 
-    <!-- 2. Price Compare -->
-    <div id="price-compare" class="tab-content">
-        <h2>2. 실시간 생수 가격 비교</h2>
-        <div class="card">
-            <input type="text" id="priceSearch" placeholder="브랜드 검색 (예: 삼다수)" onkeyup="searchPrice()">
-            <table class="price-table">
-                <thead><tr><th>쇼핑몰</th><th>가격 (2L)</th><th>링크</th></tr></thead>
-                <tbody id="priceTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <style>
-        /* ... existing styles ... */
-        /* 3. 물 계산기 & 컵 애니메이션 스타일 */
-        .cup-container {
-            position: relative;
-            width: 150px;
-            height: 200px;
-            border: 6px solid #333;
-            border-top: none;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            margin: 30px auto;
-            background: rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .water {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0%; /* JS에서 조절 */
-            background: linear-gradient(180deg, #4fa4ff 0%, #2980b9 100%);
-            transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .water::after {
-            content: "";
-            position: absolute;
-            top: -15px;
-            left: 0;
-            width: 200%;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 40%;
-            animation: wave 3s infinite linear;
-        }
-
-        @keyframes wave {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-        }
-
-        .formula-card {
-            background: #f8f9fa;
-            border-left: 4px solid var(--primary-color);
-            padding: 15px;
-            font-size: 0.9rem;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        [data-theme="dark"] .formula-card {
-            background: #333;
-            color: #ddd;
-        }
-    </style>
-...
-    <!-- 3. Intake Calc -->
-    <div id="intake-calc" class="tab-content">
-        <h2>3. 스마트 수분 섭취 계산기</h2>
-        <div class="card">
-            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
-                <div style="flex: 1; min-width: 280px;">
-                    <div class="input-group"><label>체중 (kg)</label><input type="number" id="weight" placeholder="예: 70" oninput="calculateIntake()"></div>
-                    <div class="input-group">
-                        <label>활동량 (운동 및 활동 수준)</label>
-                        <select id="activity" onchange="calculateIntake()">
-                            <option value="low">낮음 (주로 앉아서 생활)</option>
-                            <option value="normal" selected>보통 (규칙적인 활동/가벼운 운동)</option>
-                            <option value="high">높음 (강도 높은 운동/육체 노동)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>카페인 섭취 여부 (커피, 홍차 등)</label>
-                        <select id="caffeine" onchange="calculateIntake()">
-                            <option value="no">아니오</option>
-                            <option value="yes">예 (이뇨 작용 보충 필요)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="flex: 1; text-align: center; min-width: 200px;">
-                    <div class="cup-container">
-                        <div id="waterLevel" class="water"></div>
-                    </div>
-                    <h3 style="margin: 10px 0;">목표: <span id="recommendedIntake" style="color: var(--primary-color);">0.0</span> L</h3>
-                    <p style="font-size: 0.9rem;">현재 섭취량: <span id="currentDrankDisplay">0</span> ml</p>
-                    <button onclick="addWater(0.25)" class="btn-main" style="width: auto; padding: 10px 20px; font-size: 0.9rem;">물 한 잔 (250ml) 추가</button>
-                    <button onclick="resetWater()" style="background: none; border: none; color: #888; cursor: pointer; display: block; margin: 10px auto; text-decoration: underline;">초기화</button>
-                </div>
-            </div>
-
-            <!-- 섭취 히스토리 추가 -->
-            <div id="intakeHistoryContainer" style="margin-top: 30px; display: none; text-align: left;">
-                <h4 style="margin-bottom: 10px; color: var(--primary-color);">🕒 오늘의 섭취 히스토리</h4>
-                <ul id="intakeHistoryList" style="list-style: none; padding: 0; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.03); border-radius: 8px; padding: 15px; border: 1px solid #eee;">
-                    <!-- JS에서 히스토리 삽입 -->
-                </ul>
-            </div>
-
-            <div class="formula-card">
-                <h4>🧪 공신력 있는 수분 계산법</h4>
-                <p>본 계산기는 **세계보건기구(WHO)**와 **미국 국립의학연구소(IOM)**의 권장 지침을 기반으로 설계되었습니다.</p>
-                <ul style="padding-left: 20px;">
-                    <li><strong>기본 공식:</strong> 체중(kg) × 0.03 (L) - 성인 기준 표준 대사 요구량</li>
-                    <li><strong>활동량 보정:</strong> 활동량이 많을 경우 땀으로 인한 손실분을 고려하여 0.5~0.7L를 추가 합산합니다.</li>
-                    <li><strong>카페인 보정:</strong> 카페인은 섭취량의 약 1.5배 이상의 배출을 유도하므로, 커피 한 잔당 약 0.3L의 추가 섭취를 권장합니다.</li>
-                </ul>
-                <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">* 해당 수치는 일반적인 가이드이며, 질환이 있거나 특수 환경에 있는 경우 전문가의 상담이 필요합니다.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. Brand DB -->
     <div id="brand-db" class="tab-content">
-        <h2>4. 생수 브랜드 데이터베이스</h2>
-        <input type="text" id="dbSearch" placeholder="브랜드 정보 검색..." onkeyup="filterDB()" style="margin-bottom:20px">
-        <div class="db-grid" id="dbGrid"></div>
+        <h2>생수 브랜드 데이터베이스</h2>
+        <div class="card">
+            <input type="text" id="dbSearch" placeholder="브랜드명 또는 수원지로 검색..." onkeyup="filterDB()" style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px; box-sizing: border-box;">
+            <div class="db-grid" id="dbGrid"></div>
+        </div>
     </div>
 
-    <!-- 5. Ranking -->
-    <div id="ranking" class="tab-content">
-        <h2>5. 인기 생수 브랜드 TOP 10</h2>
-        <div id="rankContainer"></div>
-    </div>
-
-    <!-- 6. Community (Contact + Comments) -->
     <div id="community" class="tab-content">
         <h2>커뮤니티 및 문의</h2>
-        <!-- 제휴 문의 -->
-        <section id="contact" class="contact-form" style="background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow);">
-            <h3 style="color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px;">제휴 및 서비스 문의</h3>
-            <p>광고 게재, 서비스 제휴, 기타 문의 사항이 있으시면 아래 양식을 통해 남겨주세요.</p>
+        <div class="card">
+            <h3>💬 사용자 의견</h3>
+            <div id="disqus_thread"></div>
+        </div>
+        <div class="card">
+            <h3>📩 제휴 및 문의</h3>
             <form action="https://formspree.io/f/xqeyeboq" method="POST">
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">이름 또는 기업명</label>
-                    <input type="text" name="name" required placeholder="이름을 입력하세요" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-                </div>
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">이메일 주소</label>
-                    <input type="email" name="_replyto" required placeholder="example@domain.com" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-                </div>
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">상세 문의 내용</label>
-                    <textarea name="message" rows="5" required placeholder="문의 내용을 상세히 적어주세요" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
-                </div>
-                <button type="submit" class="btn-main">문의 제출하기</button>
+                <input type="email" name="email" placeholder="이메일 주소" required style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box;">
+                <textarea name="message" rows="4" placeholder="문의 내용을 남겨주세요" required style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box;"></textarea>
+                <button type="submit" class="btn-main">문의 보내기</button>
             </form>
-        </section>
-
-        <!-- 댓글 섹션 (가시성 개선) -->
-        <div id="disqus_thread" style="margin-top: 50px; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); color: #333 !important;"></div>
+        </div>
     </div>
+
 </div>
 
 <footer>
-    <div style="margin-bottom:20px">
-        <a href="privacy.html" style="color: var(--text-color); margin: 0 10px; text-decoration: none;">개인정보처리방침</a> | 
-        <a href="terms.html" style="color: var(--text-color); margin: 0 10px; text-decoration: none;">이용약관</a>
+    <div class="footer-links">
+        <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a>
     </div>
-    <p>© 2026 Water Utility Tools Platform</p>
+    <p>© 2026 Water Utility Tools Platform. All rights reserved.</p>
 </footer>
 
 <script>
-    // 탭 전환 로직
+    /* ==========================================
+       Core Logic & Persistence (LocalStorage)
+    ========================================== */
+    let drank = parseFloat(localStorage.getItem('drank')) || 0;
+    let intakeHistory = JSON.parse(localStorage.getItem('history')) || [];
+    let goalReached = false;
+
     function showTab(event, tabId) {
-        event.preventDefault();
+        if(event) event.preventDefault();
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         
-        // 모든 탭 컨텐츠 숨기기
-        const contents = document.querySelectorAll('.tab-content');
-        contents.forEach(content => content.classList.remove('active'));
-        
-        // 모든 탭 버튼 비활성화
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => item.classList.remove('active'));
-        
-        // 선택된 탭 컨텐츠 및 버튼 활성화
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(i => i.getAttribute('onclick').includes(tabId));
+        if(activeNav) activeNav.classList.add('active');
         
-        // 상단으로 스크롤
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 데이터 정의 (10종 생수 브랜드)
-    const brandData = [
-        { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산 암반층이 거른 깨끗한 물" },
-        { name: "농심 백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "백두산 천지의 물이 솟아오르는 자연 용천수" },
-        { name: "아이시스 8.0", source: "충북 청주 등", ca: "19.8", mg: "2.7", ph: "8.0", desc: "pH 8.0의 약알칼리성 미네랄 워터" },
-        { name: "몽베스트", source: "경기 포천", ca: "12.5", mg: "3.2", ph: "7.4", desc: "풍부한 미네랄과 세련된 패키지의 프리미엄 생수" },
-        { name: "강원 평창수", source: "강원 평창", ca: "16.5", mg: "3.0", ph: "7.5", desc: "강원도 청정지역의 맑은 암반수, 올림픽 공식 생수" },
-        { name: "풀무원 샘물", source: "경기 포천 등", ca: "13.0", mg: "2.2", ph: "7.4", desc: "철저한 품질 관리와 균형 잡힌 미네랄 밸런스" },
-        { name: "스파클", source: "충남 천안 등", ca: "8.5", mg: "1.2", ph: "7.3", desc: "자가 배송 시스템으로 유명한 가성비 최고의 생수" },
-        { name: "지리산수", source: "경남 산청", ca: "10.5", mg: "2.1", ph: "7.6", desc: "지리산 국립공원 인근 청정 구역의 맑은 샘물" },
-        { name: "동원 샘물", source: "경기 연천 등", ca: "9.2", mg: "1.8", ph: "7.4", desc: "믿고 마시는 동원의 안전하고 깨끗한 품질의 물" },
-        { name: "닥터유 제주용암수", source: "제주 구좌읍", ca: "50.0", mg: "20.0", ph: "8.1", desc: "미네랄 함량이 일반 생수보다 압도적으로 높은 용암 해수" }
-    ];
+    function calculateIntake() {
+        const w = document.getElementById('weight').value || 70;
+        let base = w * 0.03;
+        if(document.getElementById('activity').value === 'high') base += 0.7;
+        if(document.getElementById('caffeine').value === 'yes') base += 0.3;
+        const target = base.toFixed(1);
+        
+        document.getElementById('recommendedIntake').innerText = `목표: ${target}L`;
+        document.getElementById('currentDrankDisplay').innerText = Math.round(drank * 1000);
+        document.getElementById('dashGoal').innerText = target;
+        document.getElementById('dashCurrent').innerText = Math.round(drank * 1000);
+        
+        const percent = Math.min((drank / target) * 100, 100);
+        document.getElementById('waterLevel').style.height = percent + "%";
+        document.getElementById('dashPercent').innerText = Math.round(percent);
 
-    const rankingData = [
-        { rank: 1, name: "제주 삼다수", score: "4.9", desc: "시장 점유율 1위, 독보적인 브랜드 신뢰도" },
-        { rank: 2, name: "농심 백산수", score: "4.7", desc: "백두산 화산 암반수의 깨끗한 맛" },
-        { rank: 3, name: "아이시스 8.0", score: "4.6", desc: "약알칼리성 밸런스와 부드러운 목넘김" },
-        { rank: 4, name: "몽베스트", score: "4.5", desc: "트렌디한 디자인과 높은 미네랄 함량" },
-        { rank: 5, name: "강원 평창수", score: "4.3", desc: "강원도의 청정함이 느껴지는 깔끔한 맛" },
-        { rank: 6, name: "풀무원 샘물", score: "4.1", desc: "자연이 만든 여과 방식으로 균형 잡힌 맛" },
-        { rank: 7, name: "스파클", score: "4.0", desc: "뛰어난 가성비와 편리한 정기 배송 서비스" },
-        { rank: 8, name: "지리산수", score: "3.9", desc: "지리산 계곡의 맑은 기운을 담은 샘물" },
-        { rank: 9, name: "동원 샘물", score: "3.8", desc: "언제 어디서나 부담 없이 즐기는 깨끗한 물" },
-        { rank: 10, name: "닥터유 제주용암수", score: "3.7", desc: "건강을 생각하는 고함량 미네랄 워터" }
-    ];
+        if (percent >= 100 && !goalReached && target > 0) {
+            goalReached = true;
+            alert("🎉 축하합니다! 오늘의 수분 목표를 달성했습니다!");
+        }
+    }
 
-    // AI Tool 로직
+    function addWater(amount) {
+        drank += amount;
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        intakeHistory.unshift({ time, amount: amount * 1000 });
+        
+        localStorage.setItem('drank', drank);
+        localStorage.setItem('history', JSON.stringify(intakeHistory));
+        
+        updateHistoryUI();
+        calculateIntake();
+    }
+
+    function resetWater() {
+        if(confirm("오늘의 기록을 모두 초기화할까요?")) {
+            drank = 0; intakeHistory = []; goalReached = false;
+            localStorage.removeItem('drank');
+            localStorage.removeItem('history');
+            updateHistoryUI();
+            calculateIntake();
+        }
+    }
+
+    function updateHistoryUI() {
+        const list = document.getElementById('intakeHistoryList');
+        const container = document.getElementById('intakeHistoryContainer');
+        if(intakeHistory.length > 0) {
+            container.style.display = 'block';
+            list.innerHTML = intakeHistory.map(h => `<li style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between;"><span>[${h.time}]</span> <span style="font-weight:bold; color:var(--primary-color);">💧 ${h.amount}ml 섭취</span></li>`).join('');
+        } else { container.style.display = 'none'; }
+    }
+
     function previewImage(e) {
         const reader = new FileReader();
         reader.onload = () => {
             const p = document.getElementById('imagePreview');
             p.src = reader.result; p.style.display = 'block';
+            document.getElementById('analyzeBtn').style.display = 'block';
         };
         reader.readAsDataURL(e.target.files[0]);
     }
 
     function analyzeBrand() {
-        const r = document.getElementById('aiResult');
-        r.style.display = 'block'; 
-        document.getElementById('resBrand').innerText = "분석 중...";
+        const scanner = document.getElementById('scanner');
+        const btn = document.getElementById('analyzeBtn');
+        const result = document.getElementById('aiResult');
+        
+        btn.disabled = true; btn.innerText = "AI 분석 중...";
+        scanner.style.display = 'block';
+        
         setTimeout(() => {
-            document.getElementById('resBrand').innerText = "브랜드: 제주 삼다수";
-            document.getElementById('resConfidence').innerText = "신뢰도: 94%";
-            document.getElementById('resSimilar').innerText = "유사 브랜드: 백산수, 지리산수";
-        }, 1500);
+            scanner.style.display = 'none';
+            btn.innerText = "분석 완료"; btn.disabled = false;
+            result.style.display = 'block';
+            document.getElementById('resBrand').innerText = "분석 결과: 제주 삼다수";
+            document.getElementById('resConfidence').innerText = "신뢰도: 98.2%";
+            document.getElementById('resSimilar').innerText = "추천 대안: 농심 백산수, 지리산수";
+            result.scrollIntoView({ behavior: 'smooth' });
+        }, 2500);
     }
 
-    // 가격 비교 로직
-    function searchPrice() {
-        const b = document.getElementById('priceTableBody'); b.innerHTML = "";
-        const q = document.getElementById('priceSearch').value;
-        if(q.length < 1) return;
-        const shops = [{n:"쿠팡",p:980},{n:"네이버",p:1050},{n:"11번가",p:1100}];
-        shops.forEach(s => {
-            b.innerHTML += `<tr><td>${s.n}</td><td>${s.p.toLocaleString()}원</td><td><a href="#" class="buy-btn">구매하기</a></td></tr>`;
-        });
-    }
-
-    // 수분 계산기 로직
-    let drank = 0;
-    let intakeHistory = [];
-    let goalReached = false;
-
-    function calculateIntake() {
-        const w = document.getElementById('weight').value || 0;
-        let base = w * 0.03;
-        if(document.getElementById('activity').value === 'high') base += 0.5;
-        if(document.getElementById('caffeine').value === 'yes') base += 0.3;
-        const target = base.toFixed(1);
-        
-        document.getElementById('recommendedIntake').innerText = target;
-        document.getElementById('currentDrankDisplay').innerText = (drank * 1000).toFixed(0);
-        
-        const percent = Math.min((drank / target) * 100, 100);
-        const waterLevel = document.getElementById('waterLevel');
-        if (waterLevel) {
-            waterLevel.style.height = (isNaN(percent) ? 0 : percent) + "%";
-        }
-
-        // 목표 달성 알림
-        if (percent >= 100 && !goalReached && target > 0) {
-            goalReached = true;
-            setTimeout(() => {
-                alert("🎉 축하합니다! 오늘의 수분 섭취 목표를 달성하셨습니다! 건강한 습관을 계속 유지해 보세요.");
-            }, 500);
-        }
-    }
-
-    function addWater(a) { 
-        drank += a;
-        
-        // 히스토리 추가
-        const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-        intakeHistory.unshift({ time: timeStr, amount: (a * 1000).toFixed(0) });
-        updateHistoryUI();
-        
-        calculateIntake(); 
-    }
-
-    function updateHistoryUI() {
-        const container = document.getElementById('intakeHistoryContainer');
-        const list = document.getElementById('intakeHistoryList');
-        
-        if (intakeHistory.length > 0) {
-            container.style.display = 'block';
-            list.innerHTML = intakeHistory.map(item => `
-                <li style="border-bottom: 1px solid rgba(0,0,0,0.05); padding: 8px 0; font-size: 0.9rem; display: flex; justify-content: space-between;">
-                    <span style="color: #888;">[${item.time}]</span>
-                    <span style="font-weight: bold; color: var(--primary-color);">💧 ${item.amount}ml 섭취</span>
-                </li>
-            `).join('');
-        }
-    }
-
-    function resetWater() {
-        if(confirm("오늘의 섭취 기록과 히스토리를 모두 초기화할까요?")) {
-            drank = 0;
-            intakeHistory = [];
-            goalReached = false;
-            document.getElementById('intakeHistoryContainer').style.display = 'none';
-            calculateIntake();
-        }
-    }
-
-    // 브랜드 DB 로직
-    function getDBCardHTML(b) {
-        return `<div class="db-card">
-            <h3>${b.name}</h3>
-            <p style="font-size: 0.85rem; color: #777;">수원지: ${b.source}</p>
-            <p style="margin: 10px 0; font-size: 0.9rem;">
-                <strong>Ca:</strong> ${b.ca} | <strong>Mg:</strong> ${b.mg} | <strong>pH:</strong> ${b.ph}
-            </p>
-            <p>${b.desc}</p>
-        </div>`;
-    }
+    const brandData = [
+        { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산 암반층이 거른 깨끗한 물" },
+        { name: "농심 백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "백두산 천지의 물이 솟아오르는 자연 용천수" },
+        { name: "아이시스 8.0", source: "충북 청주 등", ca: "19.8", mg: "2.7", ph: "8.0", desc: "pH 8.0의 약알칼리성 미네랄 워터" },
+        { name: "몽베스트", source: "경기 포천", ca: "12.5", mg: "3.2", ph: "7.4", desc: "풍부한 미네랄과 세련된 패키지의 프리미엄 생수" },
+        { name: "강원 평창수", source: "강원 평창", ca: "16.5", mg: "3.0", ph: "7.5", desc: "강원도 청정지역의 맑은 암반수, 올림픽 공식 생수" }
+    ];
 
     function filterDB() {
-        const g = document.getElementById('dbGrid'); g.innerHTML = "";
         const q = document.getElementById('dbSearch').value.toLowerCase();
-        brandData.filter(b => b.name.includes(q)).forEach(b => {
-            g.innerHTML += getDBCardHTML(b);
-        });
+        const filtered = brandData.filter(b => b.name.includes(q) || b.source.includes(q));
+        renderDB(filtered);
     }
 
-    // 테마 설정
+    function renderDB(data) {
+        const grid = document.getElementById('dbGrid');
+        grid.innerHTML = data.map(b => `
+            <div class="db-card">
+                <h3>${b.name}</h3>
+                <p style="font-size:0.85rem; color:#777;">${b.source}</p>
+                <p style="margin:10px 0;"><strong>Ca:</strong> ${b.ca} | <strong>Mg:</strong> ${b.mg} | <strong>pH:</strong> ${b.ph}</p>
+                <p style="font-size:0.9rem;">${b.desc}</p>
+            </div>
+        `).join('');
+    }
+
     function toggleTheme() {
         const h = document.documentElement;
-        const d = h.getAttribute('data-theme') === 'dark';
-        h.setAttribute('data-theme', d ? 'light' : 'dark');
-        document.getElementById('themeBtn').innerText = d ? "🌙 다크 모드" : "☀️ 라이트 모드";
-        localStorage.setItem('theme', d ? 'light' : 'dark');
+        const isDark = h.getAttribute('data-theme') === 'dark';
+        h.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeBtn').innerText = isDark ? "🌙 테마 변경" : "☀️ 테마 변경";
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
     }
 
-    // 초기화
     window.onload = () => {
-        brandData.forEach(b => document.getElementById('dbGrid').innerHTML += getDBCardHTML(b));
-        rankingData.forEach(r => document.getElementById('rankContainer').innerHTML += `
-            <div class="rank-item">
-                <div class="rank-number">${r.rank}</div>
-                <div><h4>${r.name} (평점: ${r.score})</h4><p>${r.desc}</p></div>
-            </div>`);
-        
-        // 다크모드 복구
+        renderDB(brandData);
+        updateHistoryUI();
+        calculateIntake();
         if(localStorage.getItem('theme') === 'dark') toggleTheme();
-
-        // Disqus 로드
+        
         (function() {
             var d = document, s = d.createElement('script');
             s.src = 'https://prowater.disqus.com/embed.js';
