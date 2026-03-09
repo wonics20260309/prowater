@@ -270,7 +270,8 @@
 
 <nav>
     <ul class="nav-links">
-        <li><a href="#" class="nav-item active" onclick="showTab(event, 'ai-tool')">AI 판별</a></li>
+        <li><a href="#" class="nav-item active" onclick="showTab(event, 'about')">서비스 소개</a></li>
+        <li><a href="#" class="nav-item" onclick="showTab(event, 'ai-tool')">AI 판별</a></li>
         <li><a href="#" class="nav-item" onclick="showTab(event, 'price-compare')">가격 비교</a></li>
         <li><a href="#" class="nav-item" onclick="showTab(event, 'intake-calc')">수분 계산기</a></li>
         <li><a href="#" class="nav-item" onclick="showTab(event, 'brand-db')">브랜드 DB</a></li>
@@ -281,8 +282,44 @@
 
 <div class="container">
 
+    <!-- 0. Service Introduction -->
+    <div id="about" class="tab-content active">
+        <h2>스마트한 수분 섭취를 위한 가이드</h2>
+        
+        <div class="card">
+            <h3>💧 물 섭취의 중요성</h3>
+            <p>우리 몸의 약 70%는 물로 구성되어 있습니다. 최근 조사에 따르면 한국인의 95% 이상이 물 섭취의 중요성을 인지하고 있지만, 정작 하루 권장량인 1.5L 이상을 마시는 사람은 13%에 불과합니다. 대부분 '목이 마르지 않아서' 혹은 '귀찮아서' 물을 충분히 마시지 않고 있습니다.</p>
+        </div>
+
+        <div class="db-grid">
+            <div class="db-card">
+                <h3>하루 권장량</h3>
+                <p>WHO 기준 일일 <strong>1.5~2L</strong>의 수분 섭취를 권장합니다. 음식으로 섭취하는 수분을 포함하면 성인 남성은 약 3.7L, 여성은 2.7L의 총 수분이 필요합니다.</p>
+            </div>
+            <div class="db-card">
+                <h3>수분의 효능</h3>
+                <ul>
+                    <li><strong>신진대사 촉진:</strong> 영양소 운반 및 노폐물 배출</li>
+                    <li><strong>피로 회복:</strong> 가벼운 탈수로 인한 무력감 방지</li>
+                    <li><strong>피부 건강:</strong> 피부 탄력 유지 및 건조 예방</li>
+                    <li><strong>체중 조절:</strong> 열량 소모 지원 및 체온 조절</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px; border-left: 5px solid var(--primary-color);">
+            <h3>✅ 올바른 수분 섭취 팁</h3>
+            <ul style="line-height: 2;">
+                <li><strong>기상 직후 한 잔:</strong> 자는 동안 손실된 수분을 보충하고 신진대사를 깨웁니다.</li>
+                <li><strong>갈증 느끼기 전에:</strong> 갈증은 이미 탈수가 진행 중이라는 신호입니다. 조금씩 자주 마셔주세요.</li>
+                <li><strong>생활 환경 개선:</strong> 책상 위나 침대 옆에 항상 물잔을 두어 마시기 쉬운 환경을 만드세요.</li>
+                <li><strong>목표 설정:</strong> Water Utility Tools의 계산기를 활용해 나만의 목표를 정해 보세요.</li>
+            </ul>
+        </div>
+    </div>
+
     <!-- 1. AI Tool -->
-    <div id="ai-tool" class="tab-content active">
+    <div id="ai-tool" class="tab-content">
         <h2>1. AI 생수 브랜드 판별기</h2>
         <div class="card">
             <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
