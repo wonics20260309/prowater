@@ -1,69 +1,56 @@
 // Teachable Machine 모델 URL
 const URL = "https://teachablemachine.withgoogle.com/models/PlVGzK_8F/";
 
-let model, webcam, labelContainer, maxPredictions;
+let model, labelContainer, maxPredictions;
 
-// 모델 로드 및 웹캠 설정
-async function init() {
-    const startBtn = document.getElementById("startBtn");
-    startBtn.disabled = true;
-    startBtn.textContent = "AI 모델 로딩 중...";
-
+// 모델 로드
+async function loadModel() {
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+}
 
-    try {
-        // 모델 로드
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
+// 이미지 업로드 처리
+async function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        // 웹캠 설정
-        const flip = true; 
-        webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
-        await webcam.setup(); 
-        await webcam.play();
-        window.requestAnimationFrame(loop);
-
-        // DOM에 웹캠 화면 추가
-        const webcamContainer = document.getElementById("webcam-container");
-        webcamContainer.innerHTML = ""; // 초기화
-        webcamContainer.appendChild(webcam.canvas);
-
-        // 결과 레이블 컨테이너 설정
-        labelContainer = document.getElementById("label-container");
-        labelContainer.innerHTML = ""; // 초기화
-        for (let i = 0; i < maxPredictions; i++) {
-            const bar = document.createElement("div");
-            bar.className = "result-bar";
-            bar.innerHTML = `<div style="width: 0%"></div><span></span>`;
-            labelContainer.appendChild(bar);
-        }
-        
-        startBtn.textContent = "AI 분석 중...";
-    } catch (e) {
-        console.error(e);
-        alert("카메라를 시작할 수 없습니다. 권한을 확인해주세요.");
-        startBtn.disabled = false;
-        startBtn.textContent = "Start";
+    // 모델이 아직 로드되지 않았다면 로드
+    if (!model) {
+        await loadModel();
     }
+
+    const preview = document.getElementById('imagePreview');
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        preview.onload = function() {
+            predict(preview);
+        }
+    }
+    reader.readAsDataURL(file);
 }
 
-async function loop() {
-    webcam.update(); 
-    await predict();
-    window.requestAnimationFrame(loop);
-}
+// 이미지 예측
+async function predict(imageElement) {
+    const prediction = await model.predict(imageElement);
+    
+    labelContainer = document.getElementById("label-container");
+    labelContainer.innerHTML = ""; // 초기화
 
-// 웹캠 이미지를 모델에 통과시켜 예측
-async function predict() {
-    const prediction = await model.predict(webcam.canvas);
     for (let i = 0; i < maxPredictions; i++) {
         const classPrediction = prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(0) + "%";
-        const barDiv = labelContainer.childNodes[i].querySelector("div");
-        const spanText = labelContainer.childNodes[i].querySelector("span");
         
-        barDiv.style.width = (prediction[i].probability * 100) + "%";
-        spanText.textContent = classPrediction;
+        const bar = document.createElement("div");
+        bar.className = "result-bar";
+        bar.innerHTML = `
+            <div style="width: ${prediction[i].probability * 100}%"></div>
+            <span>${classPrediction}</span>
+        `;
+        labelContainer.appendChild(bar);
     }
 }
 

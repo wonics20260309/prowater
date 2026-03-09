@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생수 브랜드 AI 판별기</title>
+    <title>생수 브랜드 AI 판별기 - 파일 업로드</title>
     <link rel="stylesheet" href="style.css">
     <!-- TensorFlow.js 및 Teachable Machine 라이브러리 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
@@ -16,20 +16,25 @@
         <button id="themeToggleBtn" onclick="toggleTheme()">🌙 다크 모드</button>
     </div>
     <h1>물 브랜드 판별 AI</h1>
-    <p>Teachable Machine을 이용한 삼다수/몽베스트 구분</p>
+    <p>이미지 파일을 업로드하여 브랜드를 분석해보세요</p>
 </header>
 
 <div class="container">
     <div class="product">
-        <h2>브랜드 분석 카메라</h2>
-        <p>카메라에 물병 라벨을 비추고 분석 버튼을 누르세요</p>
+        <h2>브랜드 분석 (이미지 업로드)</h2>
+        <p>삼다수 또는 몽베스트 생수 사진을 업로드해주세요</p>
         
-        <div id="webcam-container"></div>
-        <div id="label-container" style="margin-top: 15px;"></div>
-        
-        <div style="margin-top: 20px;">
-            <button type="button" id="startBtn" onclick="init()">Start</button>
+        <!-- 이미지 업로드 및 미리보기 영역 -->
+        <div class="upload-section" style="margin: 20px 0;">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            <button type="button" onclick="document.getElementById('imageInput').click()">사진 선택하기</button>
         </div>
+        
+        <div id="image-preview-container">
+            <img id="imagePreview" src="#" alt="이미지 미리보기" style="display: none; max-width: 100%; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow);">
+        </div>
+
+        <div id="label-container" style="margin-top: 15px;"></div>
     </div>
 
     <!-- 구매 섹션 -->
