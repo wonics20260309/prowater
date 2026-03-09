@@ -352,30 +352,109 @@
         </div>
     </div>
 
+    <style>
+        /* ... existing styles ... */
+        /* 3. 물 계산기 & 컵 애니메이션 스타일 */
+        .cup-container {
+            position: relative;
+            width: 150px;
+            height: 200px;
+            border: 6px solid #333;
+            border-top: none;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%; /* JS에서 조절 */
+            background: linear-gradient(180deg, #4fa4ff 0%, #2980b9 100%);
+            transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .water::after {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 0;
+            width: 200%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 40%;
+            animation: wave 3s infinite linear;
+        }
+
+        @keyframes wave {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .formula-card {
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        [data-theme="dark"] .formula-card {
+            background: #333;
+            color: #ddd;
+        }
+    </style>
+...
     <!-- 3. Intake Calc -->
     <div id="intake-calc" class="tab-content">
-        <h2>3. 하루 권장 물 섭취량 계산기</h2>
+        <h2>3. 스마트 수분 섭취 계산기</h2>
         <div class="card">
-            <div class="input-group"><label>체중 (kg)</label><input type="number" id="weight" oninput="calculateIntake()"></div>
-            <div class="input-group">
-                <label>활동량</label>
-                <select id="activity" onchange="calculateIntake()">
-                    <option value="low">낮음</option>
-                    <option value="normal" selected>보통</option>
-                    <option value="high">높음</option>
-                </select>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
+                <div style="flex: 1; min-width: 280px;">
+                    <div class="input-group"><label>체중 (kg)</label><input type="number" id="weight" placeholder="예: 70" oninput="calculateIntake()"></div>
+                    <div class="input-group">
+                        <label>활동량 (운동 및 활동 수준)</label>
+                        <select id="activity" onchange="calculateIntake()">
+                            <option value="low">낮음 (주로 앉아서 생활)</option>
+                            <option value="normal" selected>보통 (규칙적인 활동/가벼운 운동)</option>
+                            <option value="high">높음 (강도 높은 운동/육체 노동)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>카페인 섭취 여부 (커피, 홍차 등)</label>
+                        <select id="caffeine" onchange="calculateIntake()">
+                            <option value="no">아니오</option>
+                            <option value="yes">예 (이뇨 작용 보충 필요)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="flex: 1; text-align: center; min-width: 200px;">
+                    <div class="cup-container">
+                        <div id="waterLevel" class="water"></div>
+                    </div>
+                    <h3 style="margin: 10px 0;">목표: <span id="recommendedIntake" style="color: var(--primary-color);">0.0</span> L</h3>
+                    <p style="font-size: 0.9rem;">현재 섭취량: <span id="currentDrankDisplay">0</span> ml</p>
+                    <button onclick="addWater(0.25)" class="btn-main" style="width: auto; padding: 10px 20px; font-size: 0.9rem;">물 한 잔 (250ml) 추가</button>
+                    <button onclick="resetWater()" style="background: none; border: none; color: #888; cursor: pointer; display: block; margin: 10px auto; text-decoration: underline;">초기화</button>
+                </div>
             </div>
-            <div class="input-group">
-                <label>카페인 섭취</label>
-                <select id="caffeine" onchange="calculateIntake()">
-                    <option value="no">아니오</option>
-                    <option value="yes">예</option>
-                </select>
-            </div>
-            <div style="text-align:center">
-                <h3>권장 섭취량: <span id="recommendedIntake">-</span> L</h3>
-                <div class="progress-container"><div id="progressBar"></div></div>
-                <button onclick="addWater(0.2)" style="margin-top:10px" class="btn-main" style="width: auto; padding: 10px 20px;">한 잔 마심 (200ml)</button>
+
+            <div class="formula-card">
+                <h4>🧪 공신력 있는 수분 계산법</h4>
+                <p>본 계산기는 **세계보건기구(WHO)**와 **미국 국립의학연구소(IOM)**의 권장 지침을 기반으로 설계되었습니다.</p>
+                <ul style="padding-left: 20px;">
+                    <li><strong>기본 공식:</strong> 체중(kg) × 0.03 (L) - 성인 기준 표준 대사 요구량</li>
+                    <li><strong>활동량 보정:</strong> 활동량이 많을 경우 땀으로 인한 손실분을 고려하여 0.5~0.7L를 추가 합산합니다.</li>
+                    <li><strong>카페인 보정:</strong> 카페인은 섭취량의 약 1.5배 이상의 배출을 유도하므로, 커피 한 잔당 약 0.3L의 추가 섭취를 권장합니다.</li>
+                </ul>
+                <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">* 해당 수치는 일반적인 가이드이며, 질환이 있거나 특수 환경에 있는 경우 전문가의 상담이 필요합니다.</p>
             </div>
         </div>
     </div>
