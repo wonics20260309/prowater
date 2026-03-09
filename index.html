@@ -44,11 +44,15 @@
         }
 
         header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                        url('https://images.unsplash.com/photo-1548839140-29a749e1cf4d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 60px 20px;
+            padding: 80px 20px;
             text-align: center;
             position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .theme-toggle {
@@ -413,8 +417,8 @@
             </form>
         </section>
 
-        <!-- 댓글 섹션 -->
-        <div id="disqus_thread" style="margin-top: 50px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow);"></div>
+        <!-- 댓글 섹션 (가시성 개선) -->
+        <div id="disqus_thread" style="margin-top: 50px; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); color: #333 !important;"></div>
     </div>
 </div>
 
