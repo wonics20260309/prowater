@@ -1,466 +1,492 @@
-<!DOCTYPE html>
+11<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Water Utility Tools - 스마트 물 관리 플랫폼</title>
-    <meta name="description" content="AI 생수 판별, 물 섭취 기록 및 브랜드 DB를 제공하는 종합 건강 도구">
-    
-    <!-- 구글 애드센스 -->
-    <meta name="google-adsense-account" content="ca-pub-9684896572010314">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9684896572010314" crossorigin="anonymous"></script>
-
-    <!-- TensorFlow.js (AI 기능용) -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-
+    <title>Water Utility Tools | 스마트 물 관리 플랫폼</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --bg-color: #f0f4f8;
-            --card-bg: #ffffff;
-            --text-color: #2c3e50;
-            --shadow: 0 10px 25px rgba(0,0,0,0.08);
-            --border-radius: 16px;
-            --accent-color: #e74c3c;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --border-color: #334155;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --shadow: 0 10px 25px rgba(0,0,0,0.4);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
+            color: var(--text-primary);
             line-height: 1.6;
-            transition: all 0.3s ease;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         header {
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                        url('https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 100px 20px;
             text-align: center;
-            position: relative;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            padding: 40px 0;
         }
 
-        .hero-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
-        .hero-desc { font-size: 1.1rem; opacity: 0.9; }
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
 
-        .theme-toggle { position: absolute; top: 20px; right: 20px; }
+        header p {
+            color: var(--text-secondary);
+        }
 
-        nav {
+        section {
             background: var(--card-bg);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            overflow-x: auto;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
 
-        .nav-links {
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
             display: flex;
-            justify-content: center;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            min-width: max-content;
+            align-items: center;
+            gap: 10px;
         }
 
-        .nav-item {
+        /* Reminder Section */
+        .reminder-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .interval-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .btn-check {
+            display: none;
+        }
+
+        .btn-label {
             display: block;
-            padding: 18px 20px;
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
+            padding: 12px;
             text-align: center;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        .nav-item.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            background: rgba(52, 152, 219, 0.05);
+        .btn-check:checked + .btn-label {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            font-weight: bold;
+            border-color: var(--accent-color);
         }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-
-        .tab-content { display: none; animation: slideUp 0.5s ease; }
-        .tab-content.active { display: block; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 30px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .btn-main {
-            background: var(--primary-color);
-            color: white;
+        .main-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
             border: none;
-            padding: 16px 30px;
-            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-start { background: var(--accent-color); color: var(--bg-color); }
+        .btn-stop { background: var(--danger-color); color: white; }
+        .btn-start:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Stats Section */
+        .stats-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .add-intake {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-ml {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: white;
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-box h3 { margin-bottom: 20px; }
+        .options-list { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            padding: 15px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+        .option-btn:hover { background: #2d3e5a; }
+
+        .result-box { text-align: center; }
+        .result-title { font-size: 1.5rem; color: var(--accent-color); margin: 15px 0; }
+        .result-desc { color: var(--text-secondary); margin-bottom: 20px; }
+        .brand-recommend { font-weight: bold; margin-bottom: 20px; }
+
+        .share-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .share-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
             cursor: pointer;
             font-weight: bold;
-            width: 100%;
-            font-size: 1rem;
-            transition: background 0.3s, transform 0.1s;
         }
-        .btn-main:active { transform: scale(0.98); }
 
-        .cup-container {
-            width: 140px; height: 180px; border: 6px solid var(--text-color);
-            border-top: none; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
-            margin: 20px auto; position: relative; overflow: hidden; background: rgba(52, 152, 219, 0.05);
-        }
-        .water {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
-            background: linear-gradient(180deg, #4fa4ff 0%, #2980b9 100%);
-            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .water::before {
-            content: ""; position: absolute; top: -10px; left: 0; width: 200%; height: 20px;
-            background: rgba(255,255,255,0.3); border-radius: 40%; animation: wave 2s infinite linear;
-        }
-        @keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .btn-kakao { background: #fee500; color: #3c1e1e; }
+        .btn-link { background: #4b5563; color: white; }
 
-        #scanner {
-            display: none; height: 4px; background: var(--primary-color);
-            position: relative; overflow: hidden; margin: 15px 0; border-radius: 2px;
-        }
-        #scanner::after {
-            content: ""; position: absolute; left: -50%; width: 50%; height: 100%;
-            background: white; animation: scan 1.5s infinite;
-        }
-        @keyframes scan { to { left: 100%; } }
-
-        .db-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .db-card { background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-top: 5px solid var(--primary-color); }
-        
-        .ad-space { background: rgba(0,0,0,0.02); border: 1px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; font-size: 0.8rem; color: #999; border-radius: 10px; }
-
-        footer { text-align: center; padding: 60px 20px; background: var(--card-bg); margin-top: 80px; font-size: 0.9rem; border-top: 1px solid rgba(0,0,0,0.05); }
-        .footer-links a { color: var(--text-color); margin: 0 10px; text-decoration: none; opacity: 0.7; }
-
-        @media (max-width: 600px) {
-            .hero-title { font-size: 1.8rem; }
-            .nav-item { padding: 15px 12px; font-size: 0.85rem; }
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.5rem; }
+            .interval-selector { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="theme-toggle">
-        <button onclick="toggleTheme()" id="themeBtn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:30px; cursor:pointer; font-weight:bold;">🌙 테마 변경</button>
-    </div>
-    <div class="hero-title">Record Your Glass</div>
-    <div class="hero-desc">오늘 당신이 마신 물 한 잔의 가치를 기록하세요.</div>
-</header>
-
-<nav>
-    <ul class="nav-links">
-        <li><a href="#" class="nav-item active" onclick="showTab(event, 'dashboard')">🏠 홈</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'intake-calc')">💧 물 일지</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'ai-tool')">🧪 AI 판별</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'brand-db')">📚 브랜드 DB</a></li>
-        <li><a href="#" class="nav-item" onclick="showTab(event, 'community')">💬 커뮤니티</a></li>
-    </ul>
-</nav>
-
 <div class="container">
+    <header>
+        <h1>💧 Water Utility Tools</h1>
+        <p>스마트한 수분 관리를 위한 필수 도구 모음</p>
+    </header>
 
-    <div id="dashboard" class="tab-content active">
-        <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
-            <h2 style="color: white; margin-top: 0;">오늘의 수분 현황</h2>
-            <div style="font-size: 3.5rem; font-weight: 800;"><span id="dashPercent">0</span>%</div>
-            <p>목표 <span id="dashGoal">0</span>L 중 <span id="dashCurrent">0</span>ml 섭취 중</p>
-            <button class="btn-main" style="background: white; color: var(--primary-color); margin-top: 10px; width: auto;" onclick="showTab(null, 'intake-calc')">기록하러 가기</button>
-        </div>
-
-        <div class="ad-space">Google AdSense: 대시보드 하단 광고 영역</div>
-
-        <div class="db-grid">
-            <div class="db-card" onclick="showTab(null, 'ai-tool')" style="cursor:pointer;">
-                <h3>🤖 AI 브랜드 판별</h3>
-                <p>생수 라벨을 찍으면 어떤 브랜드인지 AI가 즉시 알려줍니다. 지금 체험해 보세요.</p>
+    <!-- Section 1: Reminder -->
+    <section id="reminder">
+        <h2>⏰ 수분 섭취 리마인더</h2>
+        <div class="reminder-controls">
+            <div class="interval-selector">
+                <input type="radio" name="interval" id="int30" value="30" class="btn-check" checked>
+                <label for="int30" class="btn-label">30분</label>
+                
+                <input type="radio" name="interval" id="int60" value="60" class="btn-check">
+                <label for="int60" class="btn-label">1시간</label>
+                
+                <input type="radio" name="interval" id="int120" value="120" class="btn-check">
+                <label for="int120" class="btn-label">2시간</label>
             </div>
-            <div class="db-card" onclick="showTab(null, 'brand-db')" style="cursor:pointer;">
-                <h3>🔎 생수 상세 정보</h3>
-                <p>내가 마시는 물의 수원지와 미네랄 함량을 확인해 보세요. 10종 이상의 데이터 제공.</p>
-            </div>
+            <button id="startReminder" class="main-btn btn-start">알림 시작하기</button>
+            <button id="stopReminder" class="main-btn btn-stop" style="display: none;">알림 중지</button>
         </div>
-    </div>
+    </section>
 
-    <div id="intake-calc" class="tab-content">
-        <h2>스마트 수분 섭취 일지</h2>
-        <div class="card">
-            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: center;">
-                <div style="flex: 1; min-width: 280px;">
-                    <div class="input-group" style="margin-bottom: 15px;"><label style="display:block; font-weight: bold;">체중 (kg)</label><input type="number" id="weight" placeholder="예: 70" oninput="calculateIntake()" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;"></div>
-                    <div class="input-group" style="margin-bottom: 15px;">
-                        <label style="display:block; font-weight: bold;">활동량</label>
-                        <select id="activity" onchange="calculateIntake()" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;">
-                            <option value="low">낮음 (앉아서 생활)</option>
-                            <option value="normal" selected>보통 (가벼운 운동)</option>
-                            <option value="high">높음 (강도 높은 활동)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label style="display:block; font-weight: bold;">카페인 섭취</label>
-                        <select id="caffeine" onchange="calculateIntake()" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;">
-                            <option value="no">아니오</option>
-                            <option value="yes">예 (추가 보충 필요)</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="flex: 1; text-align: center; min-width: 200px;">
-                    <div class="cup-container"><div id="waterLevel" class="water"></div></div>
-                    <h3 id="recommendedIntake">목표: 0.0L</h3>
-                    <p style="font-weight: bold; font-size: 1.2rem; color: var(--primary-color);">현재: <span id="currentDrankDisplay">0</span>ml</p>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="addWater(0.25)" class="btn-main">🥛 250ml 추가</button>
-                        <button onclick="addWater(0.5)" class="btn-main" style="background: var(--secondary-color);">🍼 500ml 추가</button>
-                    </div>
-                    <button onclick="resetWater()" style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer; text-decoration:underline;">기록 초기화</button>
-                </div>
-            </div>
-            
-            <div id="intakeHistoryContainer" style="margin-top: 30px; display: none;">
-                <h4>🕒 오늘의 기록 히스토리</h4>
-                <ul id="intakeHistoryList" style="list-style:none; padding:0; background:rgba(0,0,0,0.02); border-radius:10px; padding:15px; max-height: 200px; overflow-y: auto;"></ul>
-            </div>
+    <!-- Section 2: Statistics -->
+    <section id="statistics">
+        <h2>📊 수분 섭취 통계</h2>
+        <div class="stats-tabs">
+            <button class="tab-btn active" onclick="switchTab('weekly')">주간</button>
+            <button class="tab-btn" onclick="switchTab('monthly')">월간</button>
         </div>
-        <div class="ad-space">Google AdSense: 계산기 섹션 하단</div>
-    </div>
+        <div class="chart-container">
+            <canvas id="waterChart"></canvas>
+        </div>
+        <div class="add-intake">
+            <input type="number" id="intakeAmount" class="input-ml" placeholder="섭취량(ml) 입력">
+            <button onclick="addIntake()" class="tab-btn active" style="flex: 0 0 80px;">추가</button>
+        </div>
+    </section>
 
-    <div id="ai-tool" class="tab-content">
-        <h2>AI 생수 브랜드 판별기</h2>
-        <div class="card" style="text-align: center;">
-            <div class="upload-zone" onclick="document.getElementById('imageInput').click()" style="border: 3px dashed var(--primary-color); padding: 50px; border-radius: 20px; cursor: pointer;">
-                <p style="font-size: 1.2rem; font-weight: bold;">📸 생수병 라벨 사진을 업로드하세요</p>
-                <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="previewImage(event)">
-            </div>
-            <img id="imagePreview" style="max-width: 100%; border-radius: 15px; margin-top: 20px; display: none; box-shadow: var(--shadow);">
-            
-            <div id="scanner"></div>
-            
-            <button class="btn-main" id="analyzeBtn" style="margin-top:20px; display: none;" onclick="analyzeBrand()">분석 시작하기</button>
-            
-            <div id="aiResult" class="card" style="display: none; margin-top: 20px; background: var(--bg-color); border-top: 5px solid var(--accent-color); text-align: left;">
-                <h3 id="resBrand">분석 결과: -</h3>
-                <p id="resConfidence">신뢰도: 0%</p>
-                <p id="resSimilar">추천 대안: -</p>
-                <hr style="opacity: 0.1; margin: 15px 0;">
-                <p style="font-size: 0.9rem;">해당 브랜드의 최저가를 찾으시나요?</p>
-                <a href="https://www.coupang.com" id="buyLink" target="_blank" class="btn-main" style="text-decoration: none; display: inline-block; text-align: center;">최저가 구매하러 가기</a>
-            </div>
+    <!-- Section 3: Compatibility Test -->
+    <section id="quiz">
+        <h2>🧬 내 물 궁합 테스트</h2>
+        <div id="quizContent" class="quiz-container">
+            <!-- Questions or Results will be injected here -->
         </div>
-    </div>
-
-    <div id="brand-db" class="tab-content">
-        <h2>생수 브랜드 데이터베이스</h2>
-        <div class="card">
-            <input type="text" id="dbSearch" placeholder="브랜드명 또는 수원지로 검색..." onkeyup="filterDB()" style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px; box-sizing: border-box;">
-            <div class="db-grid" id="dbGrid"></div>
-        </div>
-    </div>
-
-    <div id="community" class="tab-content">
-        <h2>커뮤니티 및 문의</h2>
-        <div class="card">
-            <h3>💬 사용자 의견</h3>
-            <!-- 댓글 영역 가시성 개선을 위해 배경색과 패딩 추가 -->
-            <div id="disqus_thread" style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); min-height: 300px;"></div>
-        </div>
-        <div class="card">
-            <h3>📩 제휴 및 문의</h3>
-            <form action="https://formspree.io/f/xqeyeboq" method="POST">
-                <input type="email" name="email" placeholder="이메일 주소" required style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box;">
-                <textarea name="message" rows="4" placeholder="문의 내용을 남겨주세요" required style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box;"></textarea>
-                <button type="submit" class="btn-main">문의 보내기</button>
-            </form>
-        </div>
-    </div>
-
+    </section>
 </div>
 
-<footer>
-    <div class="footer-links">
-        <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a>
-    </div>
-    <p>© 2026 Water Utility Tools Platform. All rights reserved.</p>
-</footer>
-
 <script>
-    /* ==========================================
-       Core Logic & Persistence (LocalStorage)
-    ========================================== */
-    let drank = parseFloat(localStorage.getItem('drank')) || 0;
-    let intakeHistory = JSON.parse(localStorage.getItem('history')) || [];
-    let goalReached = false;
+    /* 1. Reminder Logic */
+    let reminderTimer = null;
+    const startBtn = document.getElementById('startReminder');
+    const stopBtn = document.getElementById('stopReminder');
 
-    function showTab(event, tabId) {
-        if(event) event.preventDefault();
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        
-        document.getElementById(tabId).classList.add('active');
-        const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(i => i.getAttribute('onclick').includes(tabId));
-        if(activeNav) activeNav.classList.add('active');
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function calculateIntake() {
-        const w = document.getElementById('weight').value || 70;
-        let base = w * 0.03;
-        if(document.getElementById('activity').value === 'high') base += 0.7;
-        if(document.getElementById('caffeine').value === 'yes') base += 0.3;
-        const target = base.toFixed(1);
-        
-        document.getElementById('recommendedIntake').innerText = `목표: ${target}L`;
-        document.getElementById('currentDrankDisplay').innerText = Math.round(drank * 1000);
-        document.getElementById('dashGoal').innerText = target;
-        document.getElementById('dashCurrent').innerText = Math.round(drank * 1000);
-        
-        const percent = Math.min((drank / target) * 100, 100);
-        document.getElementById('waterLevel').style.height = percent + "%";
-        document.getElementById('dashPercent').innerText = Math.round(percent);
-
-        if (percent >= 100 && !goalReached && target > 0) {
-            goalReached = true;
-            alert("🎉 축하합니다! 오늘의 수분 목표를 달성했습니다!");
+    startBtn.addEventListener('click', async () => {
+        if (!("Notification" in window)) {
+            alert("이 브라우저는 알림 기능을 지원하지 않습니다.");
+            return;
         }
-    }
 
-    function addWater(amount) {
-        drank += amount;
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        intakeHistory.unshift({ time, amount: amount * 1000 });
-        
-        localStorage.setItem('drank', drank);
-        localStorage.setItem('history', JSON.stringify(intakeHistory));
-        
-        updateHistoryUI();
-        calculateIntake();
-    }
-
-    function resetWater() {
-        if(confirm("오늘의 기록을 모두 초기화할까요?")) {
-            drank = 0; intakeHistory = []; goalReached = false;
-            localStorage.removeItem('drank');
-            localStorage.removeItem('history');
-            updateHistoryUI();
-            calculateIntake();
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            const interval = document.querySelector('input[name="interval"]:checked').value;
+            const ms = interval * 60 * 1000;
+            
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            
+            alert(`${interval}분마다 알림을 보내드릴게요! 💧`);
+            
+            reminderTimer = setInterval(() => {
+                new Notification("물 마실 시간이에요! 💧", {
+                    body: "수분을 보충하고 건강을 챙기세요.",
+                    icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png"
+                });
+            }, ms);
+        } else {
+            alert("알림 권한을 허용해야 기능을 사용할 수 있습니다.");
         }
+    });
+
+    stopBtn.addEventListener('click', () => {
+        clearInterval(reminderTimer);
+        startBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+        alert("알림이 중지되었습니다.");
+    });
+
+    /* 2. Statistics Logic */
+    let currentTab = 'weekly';
+    let chart = null;
+    const DAILY_GOAL = 2000;
+
+    function getIntakeData() {
+        const data = localStorage.getItem('waterIntake');
+        return data ? JSON.parse(data) : {};
     }
 
-    function updateHistoryUI() {
-        const list = document.getElementById('intakeHistoryList');
-        const container = document.getElementById('intakeHistoryContainer');
-        if(intakeHistory.length > 0) {
-            container.style.display = 'block';
-            list.innerHTML = intakeHistory.map(h => `<li style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between;"><span>[${h.time}]</span> <span style="font-weight:bold; color:var(--primary-color);">💧 ${h.amount}ml 섭취</span></li>`).join('');
-        } else { container.style.display = 'none'; }
+    function saveIntakeData(data) {
+        localStorage.setItem('waterIntake', JSON.stringify(data));
     }
 
-    function previewImage(e) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const p = document.getElementById('imagePreview');
-            p.src = reader.result; p.style.display = 'block';
-            document.getElementById('analyzeBtn').style.display = 'block';
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
-    function analyzeBrand() {
-        const scanner = document.getElementById('scanner');
-        const btn = document.getElementById('analyzeBtn');
-        const result = document.getElementById('aiResult');
+    function addIntake() {
+        const amount = parseInt(document.getElementById('intakeAmount').value);
+        if (!amount) return;
         
-        btn.disabled = true; btn.innerText = "AI 분석 중...";
-        scanner.style.display = 'block';
+        const today = new Date().toISOString().split('T')[0];
+        const data = getIntakeData();
+        data[today] = (data[today] || 0) + amount;
         
-        setTimeout(() => {
-            scanner.style.display = 'none';
-            btn.innerText = "분석 완료"; btn.disabled = false;
-            result.style.display = 'block';
-            document.getElementById('resBrand').innerText = "분석 결과: 제주 삼다수";
-            document.getElementById('resConfidence').innerText = "신뢰도: 98.2%";
-            document.getElementById('resSimilar').innerText = "추천 대안: 농심 백산수, 지리산수";
-            result.scrollIntoView({ behavior: 'smooth' });
-        }, 2500);
+        saveIntakeData(data);
+        document.getElementById('intakeAmount').value = '';
+        renderChart();
     }
 
-    const brandData = [
-        { name: "제주 삼다수", source: "제주 조천읍", ca: "3.2", mg: "1.7", ph: "7.8", desc: "대한민국 판매 1위, 화산 암반층이 거른 깨끗한 물" },
-        { name: "농심 백산수", source: "백두산 내두천", ca: "4.0", mg: "2.1", ph: "7.1", desc: "백두산 천지의 물이 솟아오르는 자연 용천수" },
-        { name: "아이시스 8.0", source: "충북 청주 등", ca: "19.8", mg: "2.7", ph: "8.0", desc: "pH 8.0의 약알칼리성 미네랄 워터" },
-        { name: "몽베스트", source: "경기 포천", ca: "12.5", mg: "3.2", ph: "7.4", desc: "풍부한 미네랄과 세련된 패키지의 프리미엄 생수" },
-        { name: "강원 평창수", source: "강원 평창", ca: "16.5", mg: "3.0", ph: "7.5", desc: "강원도 청정지역의 맑은 암반수, 올림픽 공식 생수" }
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText === (tab === 'weekly' ? '주간' : '월간'));
+        });
+        renderChart();
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById('waterChart').getContext('2d');
+        const data = getIntakeData();
+        const labels = [];
+        const values = [];
+        const colors = [];
+
+        if (currentTab === 'weekly') {
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                labels.push(d.getMonth() + 1 + '/' + d.getDate());
+                const val = data[dateStr] || 0;
+                values.push(val);
+                colors.push(val >= DAILY_GOAL ? '#38bdf8' : '#4b5563');
+            }
+        } else {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                labels.push(i + '일');
+                values.push(data[dateStr] || 0);
+            }
+        }
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: currentTab === 'weekly' ? 'bar' : 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '섭취량 (ml)',
+                    data: values,
+                    backgroundColor: currentTab === 'weekly' ? colors : 'rgba(56, 189, 248, 0.2)',
+                    borderColor: '#38bdf8',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#334155' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
+    }
+
+    /* 3. Quiz Logic */
+    const questions = [
+        { q: "평소 운동량은?", a: ["거의 안 함", "주 2~3회", "매일"] },
+        { q: "건강 관심사는?", a: ["다이어트", "피부미용", "운동퍼포먼스", "일반건강"] },
+        { q: "물맛 선호도는?", a: ["부드러운 맛", "깔끔한 맛", "미네랄 느낌"] },
+        { q: "하루 물 섭취 습관은?", a: ["자주 조금씩", "한 번에 많이", "불규칙"] },
+        { q: "주로 마시는 상황은?", a: ["운동 중", "식사 중", "업무 중", "일상"] }
     ];
 
-    function filterDB() {
-        const q = document.getElementById('dbSearch').value.toLowerCase();
-        const filtered = brandData.filter(b => b.name.includes(q) || b.source.includes(q));
-        renderDB(filtered);
+    const results = [
+        { title: "🏔️ 고산수 타입!", desc: "깨끗하고 부드러운 목넘김을 선호하는 당신! 불순물이 적고 청량한 물이 잘 맞아요.", brands: "삼다수, 백산수" },
+        { title: "💎 미네랄 워터 타입!", desc: "풍부한 영양과 묵직한 맛을 즐기는 당신! 칼슘과 마그네슘이 풍부한 물을 추천해요.", brands: "에비앙, 피지워터" },
+        { title: "🌊 해양심층수 타입!", desc: "피부 미용과 건강에 관심이 많은 당신! 깊은 바다의 청정 에너지를 담은 물이 제격!", brands: "해양심층수 천년동안" },
+        { title: "⚡ 알칼리 이온수 타입!", desc: "운동량이 많고 빠른 수분 보충이 필요한 당신! 몸의 밸런스를 잡아주는 기능성 물이 좋아요.", brands: "아이시스 8.0" },
+        { title: "🥤 탄산수 타입!", desc: "일상의 지루함을 깨고 싶은 활동적인 당신! 톡 쏘는 탄산수가 활력을 불어넣어 줄 거예요.", brands: "트레비, 씨그램" }
+    ];
+
+    let currentQ = 0;
+    let answers = [];
+
+    function startQuiz() {
+        currentQ = 0;
+        answers = [];
+        showQuestion();
     }
 
-    function renderDB(data) {
-        const grid = document.getElementById('dbGrid');
-        grid.innerHTML = data.map(b => `
-            <div class="db-card">
-                <h3>${b.name}</h3>
-                <p style="font-size:0.85rem; color:#777;">${b.source}</p>
-                <p style="margin:10px 0;"><strong>Ca:</strong> ${b.ca} | <strong>Mg:</strong> ${b.mg} | <strong>pH:</strong> ${b.ph}</p>
-                <p style="font-size:0.9rem;">${b.desc}</p>
+    function showQuestion() {
+        const container = document.getElementById('quizContent');
+        if (currentQ >= questions.length) {
+            showResult();
+            return;
+        }
+
+        const q = questions[currentQ];
+        container.innerHTML = `
+            <div class="question-box">
+                <p style="color:var(--accent-color); margin-bottom:5px;">Q${currentQ+1}/5</p>
+                <h3>${q.q}</h3>
+                <div class="options-list">
+                    ${q.a.map((opt, i) => `<button class="option-btn" onclick="nextQuestion(${i})">${opt}</button>`).join('')}
+                </div>
             </div>
-        `).join('');
+        `;
     }
 
-    function toggleTheme() {
-        const h = document.documentElement;
-        const isDark = h.getAttribute('data-theme') === 'dark';
-        h.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        document.getElementById('themeBtn').innerText = isDark ? "🌙 테마 변경" : "☀️ 테마 변경";
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    function nextQuestion(idx) {
+        answers.push(idx);
+        currentQ++;
+        showQuestion();
     }
 
+    function showResult() {
+        const container = document.getElementById('quizContent');
+        // Simple logic based on last answer or sum
+        const resultIdx = (answers.reduce((a,b) => a+b, 0)) % results.length;
+        const res = results[resultIdx];
+
+        container.innerHTML = `
+            <div class="result-box">
+                <p>당신의 물 궁합 결과는?</p>
+                <div class="result-title">${res.title}</div>
+                <p class="result-desc">${res.desc}</p>
+                <div class="brand-recommend">추천 브랜드: ${res.brands}</div>
+                <div class="share-btns">
+                    <button class="share-btn btn-kakao" onclick="alert('카카오톡 공유 기능은 API 키가 필요합니다.')">카카오톡 공유</button>
+                    <button class="share-btn btn-link" onclick="copyLink()">링크 복사</button>
+                </div>
+                <button onclick="startQuiz()" class="tab-btn" style="margin-top:20px; width:120px;">다시 하기</button>
+            </div>
+        `;
+    }
+
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href);
+        alert('링크가 복사되었습니다!');
+    }
+
+    // Initialize
     window.onload = () => {
-        renderDB(brandData);
-        updateHistoryUI();
-        calculateIntake();
-        if(localStorage.getItem('theme') === 'dark') toggleTheme();
-        
-        (function() {
-            var d = document, s = d.createElement('script');
-            s.src = 'https://prowater.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-        })();
+        renderChart();
+        startQuiz();
     };
 </script>
+
 </body>
 </html>
