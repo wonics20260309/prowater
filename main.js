@@ -1,5 +1,5 @@
 
-// Teachable Machine 모델 URL
+0// Teachable Machine 모델 URL
 const URL = "https://teachablemachine.withgoogle.com/models/PlVGzK_8F/";
 
 let model, labelContainer, maxPredictions;
