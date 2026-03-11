@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Need Calculator - 수면 필요량 계산기</title>
+    <meta name="description" content="나이와 수면 패턴을 입력하여 적정 수면 시간을 확인하고 수면 부족 여부를 체크하세요.">
+    <style>
+        :root {
+            --primary-color: #6366f1; /* Indigo for sleep theme */
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+            --danger-color: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f1f5f9;
+                --text-sub: #94a3b8;
+                --border-color: #334155;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { width: 100%; max-width: 480px; text-align: center; }
+
+        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: var(--primary-color); }
+        .description { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 24px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-sub);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input:focus { border-color: var(--primary-color); }
+
+        .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .btn-calc {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.1s, filter 0.2s;
+        }
+        .btn-calc:active { transform: scale(0.98); }
+        .btn-calc:hover { filter: brightness(1.1); }
+
+        #resultArea {
+            margin-top: 24px;
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 2px solid var(--border-color);
+            text-align: center;
+        }
+
+        .res-label { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; margin-bottom: 10px; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .res-item { background: var(--bg-color); padding: 15px; border-radius: 15px; }
+        .res-item .val { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); }
+        .res-item .tit { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 4px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .status-sufficient { background: rgba(34, 197, 94, 0.1); color: var(--success-color); }
+        .status-slight { background: rgba(234, 179, 8, 0.1); color: var(--warning-color); }
+        .status-severe { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .home-link:hover { color: var(--primary-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Sleep Need Calculator</h1>
+        <p class="description">나이와 수면 시간을 분석하여 최적의 휴식을 가이드합니다.</p>
+    </header>
+
+    <main class="card">
+        <div class="input-group">
+            <label for="ageRange">연령대 선택</label>
+            <select id="ageRange">
+                <option value="18-25">18 – 25세 (권장: 7-9시간)</option>
+                <option value="26-64" selected>26 – 64세 (권장: 7-8시간)</option>
+                <option value="65+">65세 이상 (권장: 7-8시간)</option>
+            </select>
+        </div>
+
+        <div class="time-grid">
+            <div class="input-group">
+                <label for="bedtime">취침 시간</label>
+                <input type="time" id="bedtime" value="23:00">
+            </div>
+            <div class="input-group">
+                <label for="waketime">기상 시간</label>
+                <input type="time" id="waketime" value="07:00">
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calculateSleep()">수면 상태 분석하기</button>
+    </main>
+
+    <section id="resultArea">
+        <div class="result-card">
+            <p class="res-label">📊 분석 결과</p>
+            <div class="res-grid">
+                <div class="res-item">
+                    <p class="tit">현재 수면시간</p>
+                    <p class="val" id="currentSleep">0h</p>
+                </div>
+                <div class="res-item">
+                    <p class="tit">권장 수면시간</p>
+                    <p class="val" id="recommendedSleep">0h</p>
+                </div>
+            </div>
+            
+            <p id="statusMsg" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 5px;"></p>
+            <div id="statusBadge" class="status-badge"></div>
+        </div>
+    </section>
+
+    <a href="index.html" class="home-link">← Water Utility Tools 홈으로</a>
+</div>
+
+<script>
+    function calculateSleep() {
+        const age = document.getElementById('ageRange').value;
+        const bedtime = document.getElementById('bedtime').value;
+        const waketime = document.getElementById('waketime').value;
+
+        if (!bedtime || !waketime) return alert("시간을 입력해 주세요.");
+
+        // 시간 계산 로직
+        const start = new Date(`2026-01-01T${bedtime}:00`);
+        let end = new Date(`2026-01-01T${waketime}:00`);
+        
+        if (end <= start) {
+            end = new Date(`2026-01-02T${waketime}:00`);
+        }
+
+        const diffMs = end - start;
+        const sleepHours = diffMs / (1000 * 60 * 60);
+
+        // 권장 시간 로직
+        let minRec, maxRec;
+        if (age === "18-25") { minRec = 7; maxRec = 9; }
+        else { minRec = 7; maxRec = 8; }
+
+        // 출력 업데이트
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('currentSleep').innerText = sleepHours.toFixed(1) + 'h';
+        document.getElementById('recommendedSleep').innerText = `${minRec}-${maxRec}h`;
+
+        const badge = document.getElementById('statusBadge');
+        const msg = document.getElementById('statusMsg');
+        badge.className = 'status-badge';
+
+        // 수면 부족 판별
+        if (sleepHours >= minRec) {
+            badge.innerText = '충분한 수면';
+            badge.classList.add('status-sufficient');
+            msg.innerText = '아주 건강한 수면 습관입니다! 😴';
+        } else if (sleepHours >= minRec - 1.5) {
+            badge.innerText = '약간 부족';
+            badge.classList.add('status-slight');
+            msg.innerText = '조금 더 휴식이 필요해 보여요. 🥱';
+        } else {
+            badge.innerText = '심각한 부족';
+            badge.classList.add('status-severe');
+            msg.innerText = '만성 피로가 우려됩니다. 즉시 휴식하세요! 🚨';
+        }
+
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
