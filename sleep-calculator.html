@@ -57,14 +57,41 @@
 
         .input-group { margin-bottom: 20px; }
         .input-group label {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-weight: 700;
+            margin-bottom: 12px;
             color: var(--text-sub);
         }
 
-        select, input {
+        /* Choice Group Styles */
+        .choice-group { display: flex; gap: 8px; }
+        .choice-item { flex: 1; }
+        .choice-item input { display: none; }
+        .choice-item label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 5px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0;
+        }
+        .choice-item .age-tit { font-size: 0.9rem; font-weight: 800; margin-bottom: 2px; }
+        .choice-item .age-desc { font-size: 0.7rem; color: var(--text-sub); }
+        
+        .choice-item input:checked + label {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .choice-item input:checked + label .age-tit { color: var(--primary-color); }
+
+        input[type="time"] {
             width: 100%;
             padding: 12px 16px;
             border-radius: 12px;
@@ -75,7 +102,7 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        select:focus, input:focus { border-color: var(--primary-color); }
+        input[type="time"]:focus { border-color: var(--primary-color); }
 
         .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -149,27 +176,46 @@
     </header>
 
     <main class="card">
+        <!-- 연령대 선택 개선 -->
         <div class="input-group">
-            <label for="ageRange">연령대 선택</label>
-            <select id="ageRange">
-                <option value="18-25">18 – 25세 (권장: 7-9시간)</option>
-                <option value="26-64" selected>26 – 64세 (권장: 7-8시간)</option>
-                <option value="65+">65세 이상 (권장: 7-8시간)</option>
-            </select>
+            <label>👤 연령대를 선택해 주세요</label>
+            <div class="choice-group">
+                <div class="choice-item">
+                    <input type="radio" name="ageRange" id="age1" value="18-25">
+                    <label for="age1">
+                        <span class="age-tit">청년</span>
+                        <span class="age-desc">18-25세</span>
+                    </label>
+                </div>
+                <div class="choice-item">
+                    <input type="radio" name="ageRange" id="age2" value="26-64" checked>
+                    <label for="age2">
+                        <span class="age-tit">성인</span>
+                        <span class="age-desc">26-64세</span>
+                    </label>
+                </div>
+                <div class="choice-item">
+                    <input type="radio" name="ageRange" id="age3" value="65+">
+                    <label for="age3">
+                        <span class="age-tit">노년</span>
+                        <span class="age-desc">65세+</span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div class="time-grid">
             <div class="input-group">
-                <label for="bedtime">취침 시간</label>
+                <label for="bedtime">🌙 취침 시간</label>
                 <input type="time" id="bedtime" value="23:00">
             </div>
             <div class="input-group">
-                <label for="waketime">기상 시간</label>
+                <label for="waketime">☀️ 기상 시간</label>
                 <input type="time" id="waketime" value="07:00">
             </div>
         </div>
 
-        <button class="btn-calc" onclick="calculateSleep()">수면 상태 분석하기</button>
+        <button class="btn-calc" onclick="calculateSleep()">나의 수면 상태 분석하기</button>
     </main>
 
     <section id="resultArea">
@@ -204,7 +250,7 @@
 
 <script>
     function calculateSleep() {
-        const age = document.getElementById('ageRange').value;
+        const age = document.querySelector('input[name="ageRange"]:checked').value;
         const bedtime = document.getElementById('bedtime').value;
         const waketime = document.getElementById('waketime').value;
 
