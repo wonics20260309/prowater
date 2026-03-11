@@ -188,6 +188,14 @@
             
             <p id="statusMsg" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 5px;"></p>
             <div id="statusBadge" class="status-badge"></div>
+
+            <div id="sleepGuide" style="margin-top: 25px; padding: 18px; background: rgba(99, 102, 241, 0.08); border-radius: 15px; text-align: left; border-left: 4px solid var(--primary-color);">
+                <p style="font-size: 0.9rem; font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">💡 맞춤형 수분/수면 가이드</p>
+                <p id="guideText" style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5;"></p>
+                <div id="idealTimeBox" style="margin-top: 12px; padding: 10px; background: var(--card-bg); border-radius: 10px; border: 1px dashed var(--border-color);">
+                    <p id="idealBedtime" style="font-size: 0.85rem; font-weight: 700; color: var(--secondary-color);"></p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -225,9 +233,12 @@
 
         const badge = document.getElementById('statusBadge');
         const msg = document.getElementById('statusMsg');
+        const guide = document.getElementById('guideText');
+        const ideal = document.getElementById('idealBedtime');
+        
         badge.className = 'status-badge';
 
-        // 수면 부족 판별
+        // 1. 상태 및 기본 메시지
         if (sleepHours >= minRec) {
             badge.innerText = '충분한 수면';
             badge.classList.add('status-sufficient');
@@ -241,6 +252,26 @@
             badge.classList.add('status-severe');
             msg.innerText = '만성 피로가 우려됩니다. 즉시 휴식하세요! 🚨';
         }
+
+        // 2. 맞춤형 가이드 로직 (늦게 자는 사람 대응)
+        const bedtimeHour = parseInt(bedtime.split(':')[0]);
+        let guideMsg = "성인 건강 유지를 위한 <b>최소 수면 시간은 6시간</b>입니다. 이보다 적게 주무시면 면역력이 저하될 수 있습니다. ";
+        
+        if (bedtimeHour >= 1 && bedtimeHour <= 5) {
+            guideMsg += "현재 <b>새벽 늦게 취침</b>하고 계시네요. 생체 리듬상 밤 11시~새벽 2시 사이에는 멜라토닌 분비가 가장 활발하므로, 취침 시간을 점진적으로 앞당기는 것을 권장합니다.";
+        } else {
+            guideMsg += "현재 규칙적인 취침 시간을 유지하려 노력해 보세요. 잠들기 1시간 전 스마트폰 사용을 줄이면 수면의 질이 높아집니다.";
+        }
+        guide.innerHTML = guideMsg;
+
+        // 3. 최적 취침 시간 제안
+        // 기상 시간에서 권장 수면 시간(중간값)을 뺀 시간 계산
+        const targetDuration = (minRec + maxRec) / 2;
+        let idealDate = new Date(end.getTime() - (targetDuration * 60 * 60 * 1000));
+        const idealH = String(idealDate.getHours()).padStart(2, '0');
+        const idealM = String(idealDate.getMinutes()).padStart(2, '0');
+        
+        ideal.innerHTML = `✨ 최적 취침 제안: <b>밤 ${idealH}:${idealM}</b> 이전에 잠들면 내일 아침이 훨씬 개운합니다!`;
 
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
