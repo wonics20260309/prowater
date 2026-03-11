@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caffeine Intake Calculator - 카페인 섭취량 계산기</title>
+    <meta name="description" content="오늘 마신 커피, 에너지 드링크, 콜라 등의 카페인 함량을 계산하고 하루 권장량 대비 안전 상태를 확인하세요.">
+    <style>
+        :root {
+            --primary-color: #38bdf8;
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+            --danger-color: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        /* Dark Theme Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f1f5f9;
+                --text-sub: #94a3b8;
+                --border-color: #334155;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: var(--primary-color); }
+        .description { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 24px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-sub);
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-wrapper input:focus { border-color: var(--primary-color); }
+        .input-wrapper .unit {
+            position: absolute;
+            right: 16px;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .btn-calc {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: #0f172a;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: transform 0.1s, filter 0.2s;
+        }
+        .btn-calc:active { transform: scale(0.98); }
+        .btn-calc:hover { filter: brightness(1.05); }
+
+        #resultArea {
+            margin-top: 24px;
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 2px solid var(--border-color);
+            text-align: center;
+        }
+
+        .total-caffeine { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; }
+        .value { font-size: 2.5rem; font-weight: 800; margin: 4px 0; color: var(--primary-color); }
+        .percentage-bar {
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+        .bar-fill { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .status-safe { background: rgba(34, 197, 94, 0.1); color: var(--success-color); }
+        .status-moderate { background: rgba(234, 179, 8, 0.1); color: var(--warning-color); }
+        .status-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .home-link:hover { color: var(--primary-color); }
+
+        /* Error Message */
+        .msg { font-size: 0.8rem; color: var(--danger-color); margin-top: 4px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Caffeine Intake Calculator</h1>
+        <p class="description">오늘 마신 음료를 입력하여 카페인 섭취량을 체크하세요.</p>
+    </header>
+
+    <main class="card">
+        <div class="input-group">
+            <label for="coffee">☕ 커피 (95mg/잔)</label>
+            <div class="input-wrapper">
+                <input type="number" id="coffee" placeholder="0" min="0">
+                <span class="unit">잔</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="energy">⚡ 에너지 드링크 (80mg/캔)</label>
+            <div class="input-wrapper">
+                <input type="number" id="energy" placeholder="0" min="0">
+                <span class="unit">캔</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="coke">🥤 콜라 (40mg/캔)</label>
+            <div class="input-wrapper">
+                <input type="number" id="coke" placeholder="0" min="0">
+                <span class="unit">캔</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="tea">🍵 녹차 (30mg/잔)</label>
+            <div class="input-wrapper">
+                <input type="number" id="tea" placeholder="0" min="0">
+                <span class="unit">잔</span>
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calculate()">섭취량 계산하기</button>
+        <p id="errorMsg" class="msg">올바른 숫자를 입력해 주세요.</p>
+    </main>
+
+    <section id="resultArea">
+        <div class="result-card">
+            <p class="total-caffeine">총 카페인 섭취량</p>
+            <p class="value"><span id="totalValue">0</span><span style="font-size:1.2rem; margin-left:4px;">mg</span></p>
+            
+            <div class="percentage-bar">
+                <div id="barFill" class="bar-fill"></div>
+            </div>
+            
+            <p id="statusDesc" style="font-size: 0.9rem; font-weight: 600;"></p>
+            <div id="statusBadge" class="status-badge"></div>
+        </div>
+    </section>
+
+    <a href="index.html" class="home-link">← Water Utility Tools 홈으로</a>
+</div>
+
+<script>
+    function calculate() {
+        const coffee = parseInt(document.getElementById('coffee').value) || 0;
+        const energy = parseInt(document.getElementById('energy').value) || 0;
+        const coke = parseInt(document.getElementById('coke').value) || 0;
+        const tea = parseInt(document.getElementById('tea').value) || 0;
+        const errorMsg = document.getElementById('errorMsg');
+
+        // 유효성 검사
+        if (coffee < 0 || energy < 0 || coke < 0 || tea < 0) {
+            errorMsg.style.display = 'block';
+            return;
+        }
+        errorMsg.style.display = 'none';
+
+        // 계산 로직
+        const total = (coffee * 95) + (energy * 80) + (coke * 40) + (tea * 30);
+        const limit = 400; // 성인 하루 권장 최대치
+        const percent = Math.min((total / limit) * 100, 100);
+
+        // 결과 영역 표시
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('totalValue').innerText = total;
+        
+        const barFill = document.getElementById('barFill');
+        barFill.style.width = percent + '%';
+
+        const badge = document.getElementById('statusBadge');
+        const desc = document.getElementById('statusDesc');
+
+        // 상태 판별
+        badge.className = 'status-badge';
+        if (total < 200) {
+            badge.innerText = '안전';
+            badge.classList.add('status-safe');
+            desc.innerText = '카페인 섭취량이 낮은 편입니다. ✅';
+            barFill.style.backgroundColor = 'var(--success-color)';
+        } else if (total <= 400) {
+            badge.innerText = '보통';
+            badge.classList.add('status-moderate');
+            desc.innerText = '적절한 섭취 수준입니다. ⚠️';
+            barFill.style.backgroundColor = 'var(--warning-color)';
+        } else {
+            badge.innerText = '과다 섭취';
+            badge.classList.add('status-danger');
+            desc.innerText = '권장량을 초과했습니다. 주의하세요! 🚨';
+            barFill.style.backgroundColor = 'var(--danger-color)';
+        }
+
+        // 스크롤 이동
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
