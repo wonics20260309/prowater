@@ -7,7 +7,7 @@
     <meta name="description" content="나이와 수면 패턴을 입력하여 적정 수면 시간을 확인하고 수면 부족 여부를 체크하세요.">
     <style>
         :root {
-            --primary-color: #6366f1; /* Indigo for sleep theme */
+            --primary-color: #6366f1;
             --success-color: #22c55e;
             --warning-color: #eab308;
             --danger-color: #ef4444;
@@ -41,21 +41,21 @@
             padding: 20px;
         }
 
-        .container { width: 100%; max-width: 480px; text-align: center; }
+        .container { width: 100%; max-width: 520px; text-align: center; }
 
         h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: var(--primary-color); }
         .description { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 24px; }
 
         .card {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 24px;
+            padding: 28px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             border: 1px solid var(--border-color);
             text-align: left;
         }
 
-        .input-group { margin-bottom: 20px; }
+        .input-group { margin-bottom: 24px; }
         .input-group label {
             display: flex;
             align-items: center;
@@ -66,7 +66,7 @@
             color: var(--text-sub);
         }
 
-        /* Choice Group Styles */
+        /* Choice Group (Age) */
         .choice-group { display: flex; gap: 8px; }
         .choice-item { flex: 1; }
         .choice-item input { display: none; }
@@ -84,121 +84,110 @@
         }
         .choice-item .age-tit { font-size: 0.9rem; font-weight: 800; margin-bottom: 2px; }
         .choice-item .age-desc { font-size: 0.7rem; color: var(--text-sub); }
-        
         .choice-item input:checked + label {
             border-color: var(--primary-color);
             background: rgba(99, 102, 241, 0.1);
         }
         .choice-item input:checked + label .age-tit { color: var(--primary-color); }
 
-        /* Time Grid & Box Styles */
+        /* Time Selection Styles */
         .time-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
+            gap: 16px; 
             margin-top: 10px;
         }
         .time-box {
-            padding: 15px;
-            border-radius: 16px;
+            padding: 18px;
+            border-radius: 20px;
             border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
-        .time-box label { 
-            font-weight: 800 !important;
-            margin-bottom: 8px !important;
-            font-size: 0.8rem !important;
+        .time-box label { font-weight: 800 !important; font-size: 0.8rem !important; }
+        
+        .select-row {
+            display: flex;
+            gap: 4px;
+            justify-content: space-between;
         }
-        .time-box .helper {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--text-sub);
-            margin-top: 8px;
+        .select-row select {
+            flex: 1;
+            padding: 10px 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
             text-align: center;
+            outline: none;
+            cursor: pointer;
+            appearance: none; /* Remove default arrow for cleaner look */
         }
 
         /* Themes */
         .sleep-theme { background: rgba(99, 102, 241, 0.05); border-color: rgba(99, 102, 241, 0.2); }
         .sleep-theme label { color: #6366f1; }
-        .sleep-theme input:focus { border-color: #6366f1; background: white; }
+        .sleep-theme select:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1); }
 
         .wake-theme { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2); }
         .wake-theme label { color: #f59e0b; }
-        .wake-theme input:focus { border-color: #f59e0b; background: white; }
+        .wake-theme select:focus { border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
 
-        input[type="time"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid var(--border-color);
-            background: transparent;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
-        }
+        .helper { font-size: 0.65rem; color: var(--text-sub); margin-top: 10px; text-align: center; display: block; }
 
         .btn-calc {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 800;
             cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.1s, filter 0.2s;
+            margin-top: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
+        .btn-calc:hover { filter: brightness(1.1); transform: translateY(-1px); }
         .btn-calc:active { transform: scale(0.98); }
-        .btn-calc:hover { filter: brightness(1.1); }
 
-        #resultArea {
-            margin-top: 24px;
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Result Area */
+        #resultArea { margin-top: 28px; display: none; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .result-card {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 24px;
+            padding: 28px;
             border: 2px solid var(--border-color);
             text-align: center;
         }
-
-        .res-label { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; margin-bottom: 10px; }
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .res-item { background: var(--bg-color); padding: 15px; border-radius: 15px; }
-        .res-item .val { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); }
-        .res-item .tit { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 4px; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+        .res-item { background: var(--bg-color); padding: 18px; border-radius: 18px; }
+        .res-item .val { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); }
+        .res-item .tit { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 6px; }
 
         .status-badge {
             display: inline-block;
-            padding: 8px 20px;
-            border-radius: 30px;
+            padding: 10px 24px;
+            border-radius: 40px;
             font-weight: 800;
-            font-size: 1rem;
-            margin-top: 10px;
+            font-size: 1.05rem;
+            margin-bottom: 15px;
         }
-
         .status-sufficient { background: rgba(34, 197, 94, 0.1); color: var(--success-color); }
         .status-slight { background: rgba(234, 179, 8, 0.1); color: var(--warning-color); }
         .status-severe { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
 
-        .home-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: var(--text-sub);
-            text-decoration: none;
-            font-size: 0.85rem;
-        }
+        .home-link { display: inline-block; margin-top: 35px; color: var(--text-sub); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
         .home-link:hover { color: var(--primary-color); }
 
-        @media (max-width: 400px) {
+        @media (max-width: 480px) {
             .time-grid { grid-template-columns: 1fr; }
+            .card { padding: 20px; }
         }
     </style>
 </head>
@@ -207,7 +196,7 @@
 <div class="container">
     <header>
         <h1>Sleep Need Calculator</h1>
-        <p class="description">나이와 수면 시간을 분석하여 최적의 휴식을 가이드합니다.</p>
+        <p class="description">나이와 수면 패턴을 분석하여 최적의 휴식을 가이드합니다.</p>
     </header>
 
     <main class="card">
@@ -239,17 +228,25 @@
             </div>
         </div>
 
-        <!-- 취침/기상 시간 구분 개선 -->
+        <!-- 시간 선택 드롭다운 개선 -->
         <div class="time-grid">
-            <div class="input-group time-box sleep-theme">
-                <label for="bedtime">🌙 언제 잠드셨나요?</label>
-                <input type="time" id="bedtime" value="23:00">
-                <span class="helper">어제 밤 취침 시각</span>
+            <div class="time-box sleep-theme">
+                <label>🌙 취침 시각</label>
+                <div class="select-row">
+                    <select id="s_ampm"><option value="PM">오후</option><option value="AM">오전</option></select>
+                    <select id="s_hour"></select>
+                    <select id="s_min"></select>
+                </div>
+                <span class="helper">잠들기 시작한 시간</span>
             </div>
-            <div class="input-group time-box wake-theme">
-                <label for="waketime">☀️ 언제 일어나셨나요?</label>
-                <input type="time" id="waketime" value="07:00">
-                <span class="helper">오늘 아침 기상 시각</span>
+            <div class="time-box wake-theme">
+                <label>☀️ 기상 시각</label>
+                <div class="select-row">
+                    <select id="w_ampm"><option value="AM" selected>오전</option><option value="PM">오후</option></select>
+                    <select id="w_hour"></select>
+                    <select id="w_min"></select>
+                </div>
+                <span class="helper">오늘 아침 일어난 시간</span>
             </div>
         </div>
 
@@ -258,7 +255,9 @@
 
     <section id="resultArea">
         <div class="result-card">
-            <p class="res-label">📊 분석 결과</p>
+            <div id="statusBadge" class="status-badge"></div>
+            <p id="statusMsg" style="font-size: 1rem; font-weight: 700; margin-bottom: 20px;"></p>
+
             <div class="res-grid">
                 <div class="res-item">
                     <p class="tit">현재 수면시간</p>
@@ -269,15 +268,12 @@
                     <p class="val" id="recommendedSleep">0h</p>
                 </div>
             </div>
-            
-            <p id="statusMsg" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 5px;"></p>
-            <div id="statusBadge" class="status-badge"></div>
 
-            <div id="sleepGuide" style="margin-top: 25px; padding: 18px; background: rgba(99, 102, 241, 0.08); border-radius: 15px; text-align: left; border-left: 4px solid var(--primary-color);">
-                <p style="font-size: 0.9rem; font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">💡 맞춤형 수분/수면 가이드</p>
-                <p id="guideText" style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5;"></p>
-                <div id="idealTimeBox" style="margin-top: 12px; padding: 10px; background: var(--card-bg); border-radius: 10px; border: 1px dashed var(--border-color);">
-                    <p id="idealBedtime" style="font-size: 0.85rem; font-weight: 700; color: var(--secondary-color);"></p>
+            <div id="sleepGuide" style="margin-top: 10px; padding: 20px; background: rgba(99, 102, 241, 0.08); border-radius: 20px; text-align: left; border-left: 5px solid var(--primary-color);">
+                <p style="font-size: 0.95rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px;">💡 수면 가이드</p>
+                <p id="guideText" style="font-size: 0.85rem; color: var(--text-main); line-height: 1.6;"></p>
+                <div style="margin-top: 15px; padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border-color);">
+                    <p id="idealBedtime" style="font-size: 0.85rem; font-weight: 700; color: #0ea5e9; text-align: center;"></p>
                 </div>
             </div>
         </div>
@@ -287,24 +283,56 @@
 </div>
 
 <script>
+    // 드롭다운 옵션 동적 생성
+    function initSelects() {
+        const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        const mins = ['00', '10', '20', '30', '40', '50'];
+        
+        const hSelects = [document.getElementById('s_hour'), document.getElementById('w_hour')];
+        const mSelects = [document.getElementById('s_min'), document.getElementById('w_min')];
+
+        hSelects.forEach((sel, idx) => {
+            hours.forEach(h => {
+                const opt = document.createElement('option');
+                opt.value = h; opt.innerText = h + '시';
+                if(idx === 0 && h === 11) opt.selected = true; // 취침 기본값 11시
+                if(idx === 1 && h === 7) opt.selected = true;  // 기상 기본값 7시
+                sel.appendChild(opt);
+            });
+        });
+
+        mSelects.forEach(sel => {
+            mins.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m; opt.innerText = m + '분';
+                sel.appendChild(opt);
+            });
+        });
+    }
+
     function calculateSleep() {
-        const ageRadio = document.querySelector('input[name="ageRange"]:checked');
-        const age = ageRadio ? ageRadio.value : "26-64";
-        const bedtime = document.getElementById('bedtime').value;
-        const waketime = document.getElementById('waketime').value;
+        const age = document.querySelector('input[name="ageRange"]:checked').value;
+        
+        // 시간 파싱 로직
+        const get24H = (ampm, h, m) => {
+            let hour = parseInt(h);
+            if (ampm === "PM" && hour !== 12) hour += 12;
+            if (ampm === "AM" && hour === 12) hour = 0;
+            return { h: hour, m: parseInt(m) };
+        };
 
-        if (!bedtime || !waketime) return alert("시간을 입력해 주세요.");
+        const sTime = get24H(document.getElementById('s_ampm').value, document.getElementById('s_hour').value, document.getElementById('s_min').value);
+        const wTime = get24H(document.getElementById('w_ampm').value, document.getElementById('w_hour').value, document.getElementById('w_min').value);
 
-        const start = new Date(`2026-01-01T${bedtime}:00`);
-        let end = new Date(`2026-01-01T${waketime}:00`);
-        if (end <= start) end = new Date(`2026-01-02T${waketime}:00`);
+        const start = new Date(2026, 0, 1, sTime.h, sTime.m);
+        let end = new Date(2026, 0, 1, wTime.h, wTime.m);
+        if (end <= start) end.setDate(end.getDate() + 1);
 
-        const diffMs = end - start;
-        const sleepHours = diffMs / (1000 * 60 * 60);
+        const sleepHours = (end - start) / (1000 * 60 * 60);
 
-        let minRec, maxRec;
-        if (age === "18-25") { minRec = 7; maxRec = 9; }
-        else { minRec = 7; maxRec = 8; }
+        // 결과 업데이트
+        let minRec = 7, maxRec = 8;
+        if (age === "18-25") maxRec = 9;
 
         document.getElementById('resultArea').style.display = 'block';
         document.getElementById('currentSleep').innerText = sleepHours.toFixed(1) + 'h';
@@ -312,41 +340,40 @@
 
         const badge = document.getElementById('statusBadge');
         const msg = document.getElementById('statusMsg');
-        const guide = document.getElementById('guideText');
-        const ideal = document.getElementById('idealBedtime');
         badge.className = 'status-badge';
 
         if (sleepHours >= minRec) {
-            badge.innerText = '충분한 수면';
-            badge.classList.add('status-sufficient');
+            badge.innerText = '충분한 수면'; badge.classList.add('status-sufficient');
             msg.innerText = '아주 건강한 수면 습관입니다! 😴';
         } else if (sleepHours >= minRec - 1.5) {
-            badge.innerText = '약간 부족';
-            badge.classList.add('status-slight');
+            badge.innerText = '약간 부족'; badge.classList.add('status-slight');
             msg.innerText = '조금 더 휴식이 필요해 보여요. 🥱';
         } else {
-            badge.innerText = '심각한 부족';
-            badge.classList.add('status-severe');
+            badge.innerText = '심각한 부족'; badge.classList.add('status-severe');
             msg.innerText = '만성 피로가 우려됩니다. 즉시 휴식하세요! 🚨';
         }
 
-        const bedtimeHour = parseInt(bedtime.split(':')[0]);
-        let guideMsg = "성인 건강 유지를 위한 <b>최소 수면 시간은 6시간</b>입니다. ";
-        if (bedtimeHour >= 1 && bedtimeHour <= 5) {
-            guideMsg += "현재 <b>새벽 늦게 취침</b>하고 계시네요. 생체 리듬상 밤 11시~새벽 2시 사이에는 멜라토닌 분비가 가장 활발하므로 시간을 당겨보세요.";
+        // 가이드 로직
+        let guideMsg = `건강을 위해 매일 최소 6시간 이상의 수면을 확보하는 것이 중요합니다. `;
+        if (sTime.h >= 1 && sTime.h <= 5) {
+            guideMsg += `현재 <b>새벽 늦게 잠드는 패턴</b>입니다. 자정 이전에 잠들면 성장 호르몬과 면역력 회복에 훨씬 효과적입니다.`;
         } else {
-            guideMsg += "규칙적인 취침 습관을 위해 잠들기 1시간 전 스마트폰 사용을 줄여보세요.";
+            guideMsg += `현재의 규칙적인 패턴을 유지하면서 카페인 섭취를 조절해 보세요.`;
         }
-        guide.innerHTML = guideMsg;
+        document.getElementById('guideText').innerHTML = guideMsg;
 
+        // 최적 시간
         const targetDuration = (minRec + maxRec) / 2;
         let idealDate = new Date(end.getTime() - (targetDuration * 60 * 60 * 1000));
-        const idealH = String(idealDate.getHours()).padStart(2, '0');
-        const idealM = String(idealDate.getMinutes()).padStart(2, '0');
-        ideal.innerHTML = `✨ 최적 취침 제안: <b>밤 ${idealH}:${idealM}</b> 이전 취침 권장`;
+        const idealAMPM = idealDate.getHours() >= 12 ? "오후" : "오전";
+        let idealH = idealDate.getHours() % 12;
+        if (idealH === 0) idealH = 12;
+        document.getElementById('idealBedtime').innerHTML = `✨ 최적 제안: <b>${idealAMPM} ${idealH}:${String(idealDate.getMinutes()).padStart(2, '0')}</b> 이전에 잠들기`;
 
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
+
+    window.onload = initSelects;
 </script>
 
 </body>
